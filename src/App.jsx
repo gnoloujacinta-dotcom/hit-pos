@@ -17,7 +17,7 @@ const sb = {
 // ─── CONSTANTES ──────────────────────────────────────────────────────────────
 const CATS    = ["Tout","Plats","Boissons","Desserts"];
 const METHODS = ["Espèces","Wave","Orange Money","Carte","Glovo"];
-const PAY_COLORS = ["#c9a84c","#3b82f6","#f97316","#8b5cf6","#ec4899"];
+const PAY_COLORS = ["#4f46e5","#3b82f6","#f97316","#8b5cf6","#ec4899"];
 
 const DEFAULT_PRODUCTS = [
   {name:"Poulet braisé",cat:"Plats",price:5000,cost:2000,stock:15,img:"🍗"},
@@ -30,35 +30,65 @@ const DEFAULT_PRODUCTS = [
   {name:"Gâteau Chocolat",cat:"Desserts",price:2500,cost:900,stock:7,img:"🍰"},
 ];
 
-const C = {
-  gold:"#c9a84c", goldL:"#e8c96a", dark:"#0f0f0f", dark2:"#1a1a1a", dark3:"#242424",
-  txt:"#f0ede8", muted:"#777", green:"#22c55e", red:"#ef4444", blue:"#3b82f6",
-  orange:"#f97316", border:"rgba(201,168,76,0.18)"
+// ─── THEME ───────────────────────────────────────────────────────────────────
+const LIGHT = {
+  accent:"#4f46e5", accentL:"#6366f1", accentBg:"rgba(79,70,229,0.08)",
+  sidebar:"#1e1b4b", sidebarText:"#c7d2fe", sidebarActive:"#4f46e5", sidebarActiveBg:"rgba(255,255,255,0.12)",
+  topbar:"#ffffff", topbarBorder:"rgba(0,0,0,0.08)",
+  bg:"#f5f5f7", surface:"#ffffff", surface2:"#f0f0f5",
+  txt:"#111827", muted:"#6b7280", border:"rgba(0,0,0,0.08)",
+  green:"#16a34a", red:"#dc2626", blue:"#2563eb", orange:"#ea580c",
+  gold:"#b45309", goldBg:"rgba(180,83,9,0.08)",
+  cardBg:"#ffffff", cardBorder:"rgba(0,0,0,0.07)",
+  inputBg:"#f9f9fb", inputBorder:"rgba(0,0,0,0.12)",
+  btnPrimary:"#4f46e5", btnPrimaryText:"#ffffff",
+  btnSecondary:"transparent", btnSecondaryText:"#6b7280",
+  shadow:"0 1px 3px rgba(0,0,0,0.08)",
+};
+
+const DARK = {
+  accent:"#6366f1", accentL:"#818cf8", accentBg:"rgba(99,102,241,0.12)",
+  sidebar:"#0f0f1a", sidebarText:"#94a3b8", sidebarActive:"#6366f1", sidebarActiveBg:"rgba(99,102,241,0.15)",
+  topbar:"#161625", topbarBorder:"rgba(255,255,255,0.06)",
+  bg:"#0d0d1a", surface:"#161625", surface2:"#1e1e30",
+  txt:"#f0ede8", muted:"#64748b", border:"rgba(255,255,255,0.07)",
+  green:"#22c55e", red:"#ef4444", blue:"#3b82f6", orange:"#f97316",
+  gold:"#f59e0b", goldBg:"rgba(245,158,11,0.1)",
+  cardBg:"#1a1a2e", cardBorder:"rgba(255,255,255,0.06)",
+  inputBg:"#1e1e30", inputBorder:"rgba(255,255,255,0.1)",
+  btnPrimary:"#6366f1", btnPrimaryText:"#ffffff",
+  btnSecondary:"transparent", btnSecondaryText:"#64748b",
+  shadow:"none",
 };
 
 const fmt = n => new Intl.NumberFormat("fr-FR").format(n||0);
 
-const HitLogo = ({size=32}) => (
-  <div style={{width:size,height:size,background:"linear-gradient(135deg,#f5c400,#e8a800)",borderRadius:Math.round(size*0.2),
+// ─── LOGO AMLY-POS ───────────────────────────────────────────────────────────
+const AmlyLogo = ({size=32, C}) => (
+  <div style={{width:size,height:size,background:"linear-gradient(135deg,#4f46e5,#818cf8)",borderRadius:Math.round(size*0.22),
     display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,
-    fontSize:Math.round(size*0.38),color:"#1a1a1a",fontFamily:"Impact,Arial Black,sans-serif",
-    letterSpacing:"-1px",border:"2px solid #1a1a1a",flexShrink:0,boxShadow:"0 2px 8px rgba(245,196,0,0.3)"}}>
-    HIT
+    fontSize:Math.round(size*0.32),color:"#fff",fontFamily:"Impact,Arial Black,sans-serif",
+    letterSpacing:"-0.5px",flexShrink:0,boxShadow:"0 2px 10px rgba(79,70,229,0.4)"}}>
+    A
   </div>
 );
 
-const S = {
-  card:  {background:C.dark2, border:`1px solid ${C.border}`, borderRadius:12, padding:16},
-  th:    {textAlign:"left",fontSize:10,color:C.muted,fontWeight:600,padding:"7px 10px",borderBottom:`1px solid ${C.border}`,textTransform:"uppercase"},
-  td:    {padding:"10px 10px",fontSize:12,borderBottom:`1px solid rgba(255,255,255,0.04)`},
-  input: {background:C.dark3,border:`1px solid ${C.border}`,borderRadius:8,padding:"8px 12px",color:C.txt,fontSize:13,outline:"none",width:"100%",boxSizing:"border-box"},
-  btnG:  {background:`linear-gradient(135deg,${C.gold},${C.goldL})`,color:"#000",border:"none",borderRadius:8,padding:"10px 16px",fontWeight:700,cursor:"pointer",fontSize:13,width:"100%"},
-  btnO:  {background:"transparent",color:C.muted,border:`1px solid ${C.border}`,borderRadius:8,padding:"8px 16px",fontWeight:600,cursor:"pointer",fontSize:13,width:"100%"},
-  btnB:  {background:C.blue,color:"#fff",border:"none",borderRadius:8,padding:"10px 16px",fontWeight:700,cursor:"pointer",fontSize:13,width:"100%"},
-  btnR:  {background:C.red,color:"#fff",border:"none",borderRadius:8,padding:"6px 12px",fontWeight:700,cursor:"pointer",fontSize:12},
-};
-
 export default function AmlyPOS() {
+  const [darkMode,    setDarkMode]  = useState(true);
+  const C = darkMode ? DARK : LIGHT;
+
+  // Styles dynamiques basés sur le thème
+  const S = {
+    card:  {background:C.cardBg, border:`1px solid ${C.cardBorder}`, borderRadius:12, padding:16, boxShadow:C.shadow},
+    th:    {textAlign:"left",fontSize:10,color:C.muted,fontWeight:600,padding:"7px 10px",borderBottom:`1px solid ${C.border}`,textTransform:"uppercase"},
+    td:    {padding:"10px 10px",fontSize:12,borderBottom:`1px solid ${C.border}`},
+    input: {background:C.inputBg,border:`1px solid ${C.inputBorder}`,borderRadius:8,padding:"8px 12px",color:C.txt,fontSize:13,outline:"none",width:"100%",boxSizing:"border-box"},
+    btnG:  {background:C.btnPrimary,color:C.btnPrimaryText,border:"none",borderRadius:8,padding:"10px 16px",fontWeight:700,cursor:"pointer",fontSize:13,width:"100%"},
+    btnO:  {background:"transparent",color:C.muted,border:`1px solid ${C.border}`,borderRadius:8,padding:"8px 16px",fontWeight:600,cursor:"pointer",fontSize:13,width:"100%"},
+    btnB:  {background:C.blue,color:"#fff",border:"none",borderRadius:8,padding:"10px 16px",fontWeight:700,cursor:"pointer",fontSize:13,width:"100%"},
+    btnR:  {background:C.red,color:"#fff",border:"none",borderRadius:8,padding:"6px 12px",fontWeight:700,cursor:"pointer",fontSize:12},
+  };
+
   const [role,       setRole]      = useState("admin");
   const [page,       setPage]      = useState("caisse");
   const [products,   setProducts]  = useState([]);
@@ -80,7 +110,7 @@ export default function AmlyPOS() {
   const [orderType,  setOrderType] = useState("sur_place");
   const [toast,      setToast]     = useState(null);
   const [dbStatus,   setDbStatus]  = useState("checking");
-  const [newP,       setNewP]      = useState({name:"",cat:"Plats",price:"",cost:"",stock:"",img:"🍽️"});
+  const [newP,       setNewP]      = useState({name:"",cat:"Plats",price:"",cost:"",stock:"",img:"🍽️",img_url:""});
   const [newI,       setNewI]      = useState({name:"",unit:"kg",stock:"",stock_min:"",cost_unit:""});
   const [newR,       setNewR]      = useState({ingredient_id:"",quantite:""});
   const [payMode,    setPayMode]   = useState("simple");
@@ -89,10 +119,11 @@ export default function AmlyPOS() {
   const [amount1,    setAmount1]   = useState("");
   const [amount2,    setAmount2]   = useState("");
   const [discount,   setDiscount]  = useState(0);
-  const [rendMode,   setRendMode]  = useState("Espèces");
   const [shopInfo,   setShopInfo]  = useState({name:"HIT Fast Food", address:"Grand-Bassam, Côte d'Ivoire", phone:""});
   const [editShop,   setEditShop]  = useState(false);
   const [ingSearch,  setIngSearch] = useState("");
+  const [imgPreview, setImgPreview]= useState("");
+  const fileInputRef = useRef(null);
 
   const kdsInterval = useRef(null);
   const showToast = (msg, err=false) => { setToast({msg,err}); setTimeout(()=>setToast(null),2500); };
@@ -134,6 +165,18 @@ export default function AmlyPOS() {
     if(saleItems[saleId]) return;
     const items = await sb.getBy("sale_items","sale_id",saleId);
     setSaleItems(prev=>({...prev,[saleId]:items}));
+  };
+
+  // ── Gestion photo ──
+  const handleImageFile = (file) => {
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target.result;
+      setImgPreview(base64);
+      setNewP(p=>({...p, img_url: base64}));
+    };
+    reader.readAsDataURL(file);
   };
 
   // ── Panier ──
@@ -233,7 +276,8 @@ export default function AmlyPOS() {
     if(!newP.name||!newP.price||!newP.stock){showToast("Champs manquants",true);return;}
     setLoading(true);
     await sb.insert("products",{...newP,price:Number(newP.price),cost:Number(newP.cost||0),stock:Number(newP.stock)});
-    setNewP({name:"",cat:"Plats",price:"",cost:"",stock:"",img:"🍽️"});
+    setNewP({name:"",cat:"Plats",price:"",cost:"",stock:"",img:"🍽️",img_url:""});
+    setImgPreview("");
     await loadAll(); setModal(null); showToast("Produit ajouté ✓");
     setLoading(false);
   };
@@ -293,177 +337,204 @@ export default function AmlyPOS() {
   ];
   const nav = role==="admin" ? ADMIN_NAV : EMP_NAV;
 
+  const filteredIng = ingredients.filter(i=>i.name.toLowerCase().includes(ingSearch.toLowerCase()));
+
+  // ─── TOPBAR ──────────────────────────────────────────────────────────────
+  const Topbar = () => (
+    <div style={{display:"flex",alignItems:"center",padding:"0 16px",height:54,background:C.topbar,borderBottom:`1px solid ${C.topbarBorder}`,flexShrink:0,gap:12,boxShadow:darkMode?"none":"0 1px 3px rgba(0,0,0,0.06)"}}>
+      {/* Brand */}
+      <div style={{display:"flex",alignItems:"center",gap:9,flexShrink:0}}>
+        <AmlyLogo size={34} C={C}/>
+        <div style={{lineHeight:1.1}}>
+          <div style={{fontWeight:800,fontSize:13,color:C.accent,letterSpacing:"0.04em"}}>AMLY-POS</div>
+          <div style={{fontSize:9,color:C.muted,fontWeight:600,letterSpacing:"0.08em"}}>HIT FAST FOOD</div>
+        </div>
+        {loading&&<span style={{fontSize:10,color:C.accent,marginLeft:4}}>⏳</span>}
+        <div style={{display:"flex",alignItems:"center",gap:4,marginLeft:8}}>
+          <span style={{width:6,height:6,borderRadius:"50%",background:dbStatus==="ok"?C.green:C.red,flexShrink:0}}></span>
+          <span style={{fontSize:9,color:dbStatus==="ok"?C.green:C.red}}>{dbStatus==="ok"?"Connecté":"Erreur"}</span>
+        </div>
+        {ingCritiques.length>0&&(
+          <div style={{background:`${C.red}18`,border:`1px solid ${C.red}`,borderRadius:6,padding:"2px 8px",fontSize:10,color:C.red,fontWeight:700}}>
+            ⚠️ {ingCritiques.length} rupture{ingCritiques.length>1?"s":""}
+          </div>
+        )}
+      </div>
+
+      <div style={{flex:1}}/>
+
+      {/* Infos droite */}
+      <div style={{display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
+        {selTable&&<div style={{background:C.accentBg,border:`1px solid ${C.accent}`,borderRadius:8,padding:"3px 10px",fontSize:11,color:C.accent,fontWeight:700}}>🪑 {selTable.label}</div>}
+        <div style={{
+          background:orderType==="sur_place"?`${C.green}18`:`${C.blue}18`,
+          border:`1px solid ${orderType==="sur_place"?C.green:C.blue}`,borderRadius:8,padding:"3px 10px",fontSize:11,
+          color:orderType==="sur_place"?C.green:C.blue,fontWeight:700,cursor:"pointer"}}
+          onClick={()=>setOrderType(t=>t==="sur_place"?"emporter":"sur_place")}>
+          {orderType==="sur_place"?"🍽 Sur place":"🥡 Emporter"}
+        </div>
+        <div style={{textAlign:"right",borderLeft:`1px solid ${C.border}`,paddingLeft:10}}>
+          <div style={{fontSize:9,color:C.muted,fontWeight:600}}>AUJOURD'HUI</div>
+          <div style={{fontSize:12,fontWeight:800,color:C.accent}}>{fmt(todayRev)} F</div>
+        </div>
+
+        {/* Toggle Dark/Light */}
+        <button onClick={()=>setDarkMode(d=>!d)}
+          style={{display:"flex",alignItems:"center",gap:6,padding:"5px 12px",borderRadius:20,border:`1px solid ${C.border}`,cursor:"pointer",background:C.surface2,color:C.txt,fontSize:11,fontWeight:600}}>
+          {darkMode?"☀️ Clair":"🌙 Sombre"}
+        </button>
+
+        {/* Rôle */}
+        <div style={{display:"flex",gap:4}}>
+          {["admin","employee"].map(r=>(
+            <button key={r} onClick={()=>{setRole(r);setPage("caisse");}}
+              style={{padding:"4px 10px",borderRadius:12,border:`1px solid ${role===r?C.accent:C.border}`,cursor:"pointer",fontSize:10,fontWeight:600,
+                background:role===r?C.accent:"transparent",color:role===r?"#fff":C.muted}}>
+              {r==="admin"?"👑 Admin":"👤 Emp."}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ─── SIDEBAR ──────────────────────────────────────────────────────────────
+  const Sidebar = () => (
+    <div style={{width:175,background:C.sidebar,display:"flex",flexDirection:"column",padding:"12px 0",flexShrink:0,overflowY:"auto"}}>
+      {nav.map(n=>(
+        <div key={n.k} onClick={()=>setPage(n.k)}
+          style={{display:"flex",alignItems:"center",gap:9,padding:"10px 16px",cursor:"pointer",fontSize:12,
+            borderLeft:page===n.k?`3px solid ${C.accentL}`:"3px solid transparent",
+            background:page===n.k?C.sidebarActiveBg:"transparent",
+            color:page===n.k?"#fff":C.sidebarText,
+            fontWeight:page===n.k?700:400}}>
+          <span style={{fontSize:14}}>{n.i}</span>
+          <span>{n.l}</span>
+          {n.k==="cuisine"&&orders.filter(o=>o.statut==="en_attente").length>0&&(
+            <span style={{marginLeft:"auto",background:C.red,color:"#fff",borderRadius:10,fontSize:10,fontWeight:700,padding:"1px 6px"}}>
+              {orders.filter(o=>o.statut==="en_attente").length}
+            </span>
+          )}
+          {n.k==="ingredients"&&ingCritiques.length>0&&(
+            <span style={{marginLeft:"auto",background:C.red,color:"#fff",borderRadius:10,fontSize:10,fontWeight:700,padding:"1px 6px"}}>
+              {ingCritiques.length}
+            </span>
+          )}
+        </div>
+      ))}
+
+      {/* Footer sidebar */}
+      <div style={{marginTop:"auto",padding:"12px 16px",borderTop:`1px solid rgba(255,255,255,0.08)`}}>
+        <div style={{fontSize:11,color:"#fff",fontWeight:700}}>{role==="admin"?"Admin":"Employé"}</div>
+        <div style={{fontSize:10,color:C.sidebarText,marginTop:1}}>HIT Fast Food</div>
+        <div style={{display:"flex",alignItems:"center",gap:4,marginTop:4}}>
+          <span style={{width:6,height:6,borderRadius:"50%",background:dbStatus==="ok"?C.green:C.red}}></span>
+          <span style={{fontSize:10,color:dbStatus==="ok"?C.green:C.red}}>{dbStatus==="ok"?"En ligne":"Hors ligne"}</span>
+        </div>
+      </div>
+    </div>
+  );
+
   const MBtn = ({m,active,onClick,color}) => (
-    <button onClick={onClick} style={{flex:1,padding:"5px 3px",border:`1px solid ${active?(color||C.gold):C.border}`,borderRadius:6,
+    <button onClick={onClick} style={{flex:1,padding:"5px 3px",border:`1px solid ${active?(color||C.accent):C.border}`,borderRadius:6,
       cursor:"pointer",fontSize:10,fontWeight:600,whiteSpace:"nowrap",
-      background:active?(color||C.gold):"transparent",color:active?(color?"#fff":"#000"):C.muted}}>
+      background:active?(color||C.accent):"transparent",color:active?"#fff":C.muted}}>
       {m==="Wave"?"〰 Wave":m==="Orange Money"?"🟠 OM":m==="Glovo"?"🛵 Glovo":m}
     </button>
   );
 
-  const filteredIng = ingredients.filter(i=>i.name.toLowerCase().includes(ingSearch.toLowerCase()));
-
   return (
-    <div style={{fontFamily:"'DM Sans',system-ui,sans-serif",background:C.dark,color:C.txt,minHeight:"100vh",display:"flex",flexDirection:"column",fontSize:14}}>
+    <div style={{fontFamily:"'DM Sans',system-ui,sans-serif",background:C.bg,color:C.txt,minHeight:"100vh",display:"flex",flexDirection:"column",fontSize:14,transition:"background 0.2s,color 0.2s"}}>
+      <Topbar/>
 
-      {/* TOPBAR */}
-      <div style={{display:"flex",alignItems:"center",padding:"0 14px",height:50,background:C.dark2,borderBottom:`1px solid ${C.border}`,flexShrink:0,gap:10}}>
-        <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
-          <HitLogo size={34}/>
-          <div style={{lineHeight:1.1}}>
-            <div style={{fontWeight:900,fontSize:13,color:C.gold,fontFamily:"Impact,sans-serif",letterSpacing:"0.05em"}}>HIT FAST FOOD</div>
-            <div style={{fontSize:9,color:C.muted,fontWeight:600,letterSpacing:"0.1em"}}>POINT OF SALE</div>
-          </div>
-          {loading&&<span style={{fontSize:10,color:C.gold,marginLeft:4}}>⏳</span>}
-          <div style={{display:"flex",alignItems:"center",gap:4,marginLeft:8}}>
-            <span style={{width:6,height:6,borderRadius:"50%",background:dbStatus==="ok"?C.green:C.red}}></span>
-            <span style={{fontSize:9,color:dbStatus==="ok"?C.green:C.red}}>{dbStatus==="ok"?"DB connectée":"DB erreur"}</span>
-          </div>
-          {ingCritiques.length>0&&(
-            <div style={{background:"rgba(239,68,68,0.15)",border:`1px solid ${C.red}`,borderRadius:6,padding:"2px 8px",fontSize:10,color:C.red,fontWeight:700}}>
-              ⚠️ {ingCritiques.length} ingrédient{ingCritiques.length>1?"s":""} en rupture
-            </div>
-          )}
-        </div>
-
-        <div style={{display:"flex",gap:2,flex:1,justifyContent:"center",flexWrap:"wrap"}}>
-          {nav.map(n=>(
-            <button key={n.k} onClick={()=>setPage(n.k)}
-              style={{padding:"4px 10px",borderRadius:5,border:"none",cursor:"pointer",fontSize:11,fontWeight:600,
-                background:page===n.k?C.gold:"transparent",color:page===n.k?"#000":C.muted}}>
-              {n.i} {n.l}
-            </button>
-          ))}
-        </div>
-
-        <div style={{display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
-          {selTable&&<div style={{background:"rgba(201,168,76,0.15)",border:`1px solid ${C.gold}`,borderRadius:8,padding:"3px 10px",fontSize:11,color:C.gold,fontWeight:700}}>🪑 {selTable.label}</div>}
-          <div style={{background:orderType==="sur_place"?"rgba(34,197,94,0.15)":"rgba(59,130,246,0.15)",
-            border:`1px solid ${orderType==="sur_place"?C.green:C.blue}`,borderRadius:8,padding:"3px 10px",fontSize:11,
-            color:orderType==="sur_place"?C.green:C.blue,fontWeight:700,cursor:"pointer"}}
-            onClick={()=>setOrderType(t=>t==="sur_place"?"emporter":"sur_place")}>
-            {orderType==="sur_place"?"🍽 Sur place":"🥡 Emporter"}
-          </div>
-          <div style={{textAlign:"right"}}>
-            <div style={{fontSize:9,color:C.muted}}>Aujourd'hui</div>
-            <div style={{fontSize:12,fontWeight:800,color:C.gold}}>{fmt(todayRev)} F</div>
-          </div>
-          <div style={{display:"flex",gap:4}}>
-            {["admin","employee"].map(r=>(
-              <button key={r} onClick={()=>{setRole(r);setPage("caisse");}}
-                style={{padding:"3px 9px",borderRadius:12,border:`1px solid ${C.border}`,cursor:"pointer",fontSize:10,fontWeight:600,
-                  background:role===r?C.gold:"transparent",color:role===r?"#000":C.muted}}>
-                {r==="admin"?"👑":"👤"} {r==="admin"?"Admin":"Emp."}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {toast&&<div style={{position:"fixed",top:58,right:18,zIndex:9999,background:toast.err?"#7f1d1d":"#14532d",color:toast.err?"#fca5a5":"#86efac",padding:"8px 16px",borderRadius:10,fontWeight:600,fontSize:13,boxShadow:"0 4px 20px rgba(0,0,0,0.5)"}}>{toast.msg}</div>}
+      {toast&&<div style={{position:"fixed",top:62,right:18,zIndex:9999,background:toast.err?"#7f1d1d":"#14532d",color:toast.err?"#fca5a5":"#86efac",padding:"8px 16px",borderRadius:10,fontWeight:600,fontSize:13,boxShadow:"0 4px 20px rgba(0,0,0,0.3)"}}>{toast.msg}</div>}
 
       <div style={{display:"flex",flex:1,overflow:"hidden"}}>
-        {/* SIDEBAR */}
-        <div style={{width:170,background:C.dark2,borderRight:`1px solid ${C.border}`,display:"flex",flexDirection:"column",padding:"10px 0",flexShrink:0,overflowY:"auto"}}>
-          {nav.map(n=>(
-            <div key={n.k} onClick={()=>setPage(n.k)}
-              style={{display:"flex",alignItems:"center",gap:8,padding:"9px 14px",cursor:"pointer",fontSize:12,
-                borderLeft:page===n.k?`3px solid ${C.gold}`:"3px solid transparent",
-                background:page===n.k?"rgba(201,168,76,0.08)":"transparent",
-                color:page===n.k?C.gold:C.muted}}>
-              <span>{n.i}</span><span>{n.l}</span>
-              {n.k==="cuisine"&&orders.filter(o=>o.statut==="en_attente").length>0&&(
-                <span style={{marginLeft:"auto",background:C.red,color:"#fff",borderRadius:10,fontSize:10,fontWeight:700,padding:"1px 6px"}}>
-                  {orders.filter(o=>o.statut==="en_attente").length}
-                </span>
-              )}
-              {n.k==="ingredients"&&ingCritiques.length>0&&(
-                <span style={{marginLeft:"auto",background:C.red,color:"#fff",borderRadius:10,fontSize:10,fontWeight:700,padding:"1px 6px"}}>
-                  {ingCritiques.length}
-                </span>
-              )}
-            </div>
-          ))}
-          <div style={{marginTop:"auto",padding:"12px 14px",borderTop:`1px solid ${C.border}`}}>
-            <div style={{fontSize:11,color:C.gold,fontWeight:700}}>{role==="admin"?"Admin":"Employé"}</div>
-            <div style={{fontSize:10,color:C.muted,marginTop:1}}>HIT Fast Food</div>
-            <div style={{display:"flex",alignItems:"center",gap:4,marginTop:4}}>
-              <span style={{width:6,height:6,borderRadius:"50%",background:dbStatus==="ok"?C.green:C.red}}></span>
-              <span style={{fontSize:10,color:dbStatus==="ok"?C.green:C.red}}>{dbStatus==="ok"?"En ligne":"Hors ligne"}</span>
-            </div>
-          </div>
-        </div>
+        <Sidebar/>
 
         <div style={{flex:1,overflow:"hidden",display:"flex"}}>
 
           {/* ══ CAISSE ══ */}
           {page==="caisse"&&(
             <div style={{display:"flex",flex:1,overflow:"hidden"}}>
-              <div style={{flex:1,overflow:"auto",padding:14}}>
+              {/* Grille produits */}
+              <div style={{flex:1,overflow:"auto",padding:16,background:C.bg}}>
                 <div style={{display:"flex",gap:8,marginBottom:12}}>
                   {["sur_place","emporter"].map(t=>(
                     <button key={t} onClick={()=>setOrderType(t)}
-                      style={{flex:1,padding:"8px",borderRadius:8,border:`2px solid ${orderType===t?(t==="sur_place"?C.green:C.blue):C.border}`,
+                      style={{flex:1,padding:"9px",borderRadius:9,border:`2px solid ${orderType===t?(t==="sur_place"?C.green:C.blue):C.border}`,
                         cursor:"pointer",fontWeight:700,fontSize:12,
-                        background:orderType===t?(t==="sur_place"?"rgba(34,197,94,0.15)":"rgba(59,130,246,0.15)"):"transparent",
+                        background:orderType===t?(t==="sur_place"?`${C.green}15`:`${C.blue}15`):"transparent",
                         color:orderType===t?(t==="sur_place"?C.green:C.blue):C.muted}}>
                       {t==="sur_place"?"🍽️ Sur place":"🥡 Emporter"}
                     </button>
                   ))}
                   {orderType==="sur_place"&&(
                     <button onClick={()=>setPage("tables")}
-                      style={{flex:1,padding:"8px",borderRadius:8,border:`2px solid ${selTable?C.gold:C.border}`,
+                      style={{flex:1,padding:"9px",borderRadius:9,border:`2px solid ${selTable?C.accent:C.border}`,
                         cursor:"pointer",fontWeight:700,fontSize:12,
-                        background:selTable?"rgba(201,168,76,0.15)":"transparent",
-                        color:selTable?C.gold:C.muted}}>
+                        background:selTable?C.accentBg:"transparent",color:selTable?C.accent:C.muted}}>
                       {selTable?`🪑 ${selTable.label}`:"🪑 Choisir table"}
                     </button>
                   )}
                 </div>
+
                 <div style={{display:"flex",gap:8,marginBottom:10,alignItems:"center"}}>
-                  <input style={{...S.input,flex:1}} placeholder="🔍 Rechercher…" value={search} onChange={e=>setSearch(e.target.value)}/>
-                  {role==="admin"&&<button style={{...S.btnG,width:"auto",padding:"8px 12px",whiteSpace:"nowrap",fontSize:12}} onClick={()=>setModal("addProd")}>+ Nouveau</button>}
+                  <input style={{...S.input,flex:1}} placeholder="🔍 Rechercher un plat, boisson…" value={search} onChange={e=>setSearch(e.target.value)}/>
+                  {role==="admin"&&(
+                    <button style={{...S.btnG,width:"auto",padding:"8px 14px",whiteSpace:"nowrap",fontSize:12}} onClick={()=>{ setImgPreview(""); setModal("addProd"); }}>
+                      + Nouveau produit
+                    </button>
+                  )}
                 </div>
-                <div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap"}}>
+
+                {/* Catégories */}
+                <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
                   {CATS.map(c=>(
                     <button key={c} onClick={()=>setCat(c)}
-                      style={{padding:"4px 12px",borderRadius:14,border:`1px solid ${C.border}`,cursor:"pointer",fontSize:11,fontWeight:600,
-                        background:cat===c?C.gold:"transparent",color:cat===c?"#000":C.muted}}>
-                      {c}
+                      style={{padding:"5px 14px",borderRadius:16,border:`1px solid ${cat===c?C.accent:C.border}`,cursor:"pointer",fontSize:11,fontWeight:600,
+                        background:cat===c?C.accent:"transparent",color:cat===c?"#fff":C.muted,transition:"all .15s"}}>
+                      {c==="Tout"?"🍽 Tous":c==="Plats"?"🥘 Plats":c==="Boissons"?"🥤 Boissons":"🍰 Desserts"}
                     </button>
                   ))}
                 </div>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:8}}>
+
+                {/* Grille */}
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10}}>
                   {filtered.map(p=>(
                     <div key={p.id} onClick={()=>addToCart(p)}
-                      style={{background:C.dark3,border:`1px solid ${C.border}`,borderRadius:10,padding:10,
+                      style={{background:C.cardBg,border:`1px solid ${C.cardBorder}`,borderRadius:12,padding:10,
                         cursor:p.stock>0?"pointer":"not-allowed",textAlign:"center",transition:"all .15s",
-                        opacity:p.stock===0?0.4:1,display:"flex",flexDirection:"column",gap:3}}
-                      onMouseEnter={e=>{if(p.stock>0){e.currentTarget.style.borderColor=C.gold;e.currentTarget.style.transform="translateY(-2px)";}}}
-                      onMouseLeave={e=>{e.currentTarget.style.borderColor=C.border;e.currentTarget.style.transform="none";}}>
+                        opacity:p.stock===0?0.45:1,display:"flex",flexDirection:"column",gap:4,
+                        boxShadow:C.shadow}}
+                      onMouseEnter={e=>{if(p.stock>0){e.currentTarget.style.borderColor=C.accent;e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 4px 12px ${C.accent}30`;}}}
+                      onMouseLeave={e=>{e.currentTarget.style.borderColor=C.cardBorder;e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow=C.shadow;}}>
                       {p.img_url
-                        ? <img src={p.img_url} alt={p.name} style={{width:"100%",height:70,objectFit:"cover",borderRadius:6}}/>
-                        : <div style={{fontSize:30}}>{p.img}</div>
+                        ? <img src={p.img_url} alt={p.name} style={{width:"100%",height:80,objectFit:"cover",borderRadius:8}}/>
+                        : <div style={{fontSize:36,height:80,display:"flex",alignItems:"center",justifyContent:"center",background:C.surface2,borderRadius:8}}>{p.img}</div>
                       }
-                      <div style={{fontSize:11,fontWeight:600,lineHeight:1.2}}>{p.name}</div>
-                      <div style={{fontSize:12,fontWeight:800,color:C.gold}}>{fmt(p.price)} F</div>
+                      <div style={{fontSize:11,fontWeight:600,lineHeight:1.3,color:C.txt}}>{p.name}</div>
+                      <div style={{fontSize:12,fontWeight:800,color:C.accent}}>{fmt(p.price)} F</div>
                       <div style={{fontSize:10,color:p.stock<5?C.red:C.muted}}>Stock: {p.stock}</div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Panier */}
-              <div style={{width:290,background:C.dark2,borderLeft:`1px solid ${C.border}`,display:"flex",flexDirection:"column",overflow:"hidden"}}>
-                <div style={{padding:"10px 12px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                  <span style={{fontWeight:700,fontSize:13}}>🧾 Commande</span>
+              {/* ── Panier ── */}
+              <div style={{width:300,background:C.surface,borderLeft:`1px solid ${C.border}`,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+                <div style={{padding:"12px 14px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",background:C.surface}}>
+                  <span style={{fontWeight:800,fontSize:14,color:C.txt}}>🧾 Commande</span>
                   <span style={{fontSize:11,color:orderType==="sur_place"?C.green:C.blue,fontWeight:600}}>
                     {orderType==="sur_place"?`🍽 Sur place${selTable?` · ${selTable.label}`:""}` :"🥡 Emporter"}
                   </span>
                 </div>
+
                 {cart.length===0?(
-                  <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",color:C.muted,gap:6}}>
-                    <span style={{fontSize:30}}>🛒</span><span style={{fontSize:12}}>Panier vide</span>
+                  <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",color:C.muted,gap:8}}>
+                    <span style={{fontSize:36}}>🛒</span>
+                    <span style={{fontSize:13}}>Panier vide</span>
+                    <span style={{fontSize:11,color:C.muted,textAlign:"center",padding:"0 20px"}}>Cliquez sur un produit pour l'ajouter</span>
                   </div>
                 ):(
                   <div style={{flex:1,overflow:"auto"}}>
@@ -479,35 +550,39 @@ export default function AmlyPOS() {
                           <tr key={i.id}>
                             <td style={{...S.td,fontSize:11,paddingLeft:10}}>{i.img} {i.name}</td>
                             <td style={{...S.td,textAlign:"center"}}>
-                              <div style={{display:"flex",alignItems:"center",gap:2,justifyContent:"center"}}>
-                                <button onClick={()=>updateQty(i.id,-1)} style={{width:19,height:19,borderRadius:4,border:`1px solid ${C.border}`,background:"transparent",color:C.txt,cursor:"pointer",fontSize:11}}>−</button>
-                                <span style={{fontSize:12,fontWeight:700,minWidth:14,textAlign:"center"}}>{i.qty}</span>
-                                <button onClick={()=>updateQty(i.id,1)}  style={{width:19,height:19,borderRadius:4,border:`1px solid ${C.border}`,background:"transparent",color:C.txt,cursor:"pointer",fontSize:11}}>+</button>
+                              <div style={{display:"flex",alignItems:"center",gap:3,justifyContent:"center"}}>
+                                <button onClick={()=>updateQty(i.id,-1)} style={{width:20,height:20,borderRadius:5,border:`1px solid ${C.border}`,background:C.surface2,color:C.txt,cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center"}}>−</button>
+                                <span style={{fontSize:12,fontWeight:700,minWidth:16,textAlign:"center"}}>{i.qty}</span>
+                                <button onClick={()=>updateQty(i.id,1)}  style={{width:20,height:20,borderRadius:5,border:`1px solid ${C.border}`,background:C.surface2,color:C.txt,cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center"}}>+</button>
                               </div>
                             </td>
-                            <td style={{...S.td,textAlign:"right",color:C.gold,fontWeight:700,fontSize:11}}>{fmt(i.price*i.qty)}</td>
-                            <td style={S.td}><button onClick={()=>removeItem(i.id)} style={{background:"none",border:"none",color:C.red,cursor:"pointer",fontSize:11}}>✕</button></td>
+                            <td style={{...S.td,textAlign:"right",color:C.accent,fontWeight:700,fontSize:11}}>{fmt(i.price*i.qty)}</td>
+                            <td style={S.td}><button onClick={()=>removeItem(i.id)} style={{background:"none",border:"none",color:C.red,cursor:"pointer",fontSize:12}}>✕</button></td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
                 )}
-                <div style={{padding:10,borderTop:`1px solid ${C.border}`,display:"flex",flexDirection:"column",gap:7}}>
+
+                <div style={{padding:12,borderTop:`1px solid ${C.border}`,display:"flex",flexDirection:"column",gap:8,background:C.surface}}>
                   <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:C.muted}}>
                     <span>Sous-total</span><span>{fmt(cartSub)} F</span>
                   </div>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:11}}>
                     <span style={{color:C.muted}}>Remise</span>
-                    <input style={{...S.input,width:75,textAlign:"right",padding:"3px 7px",fontSize:11}} type="number" value={discount} onChange={e=>setDiscount(e.target.value)} placeholder="0"/>
+                    <input style={{...S.input,width:80,textAlign:"right",padding:"4px 8px",fontSize:11}} type="number" value={discount} onChange={e=>setDiscount(e.target.value)} placeholder="0"/>
                   </div>
-                  <div style={{display:"flex",justifyContent:"space-between",fontWeight:800,fontSize:14}}>
+                  <div style={{display:"flex",justifyContent:"space-between",fontWeight:800,fontSize:16,padding:"6px 0",borderTop:`1px solid ${C.border}`}}>
                     <span>Total</span><span style={{color:C.green}}>{fmt(cartTotal)} F</span>
                   </div>
+
+                  {/* Mode paiement */}
                   <div style={{display:"flex",gap:5}}>
-                    <button onClick={()=>setPayMode("simple")} style={{flex:1,padding:"4px",border:`1px solid ${payMode==="simple"?C.gold:C.border}`,borderRadius:6,cursor:"pointer",fontSize:10,fontWeight:600,background:payMode==="simple"?C.gold:"transparent",color:payMode==="simple"?"#000":C.muted}}>Simple</button>
-                    <button onClick={()=>setPayMode("mixte")} style={{flex:1,padding:"4px",border:`1px solid ${payMode==="mixte"?C.blue:C.border}`,borderRadius:6,cursor:"pointer",fontSize:10,fontWeight:600,background:payMode==="mixte"?C.blue:"transparent",color:payMode==="mixte"?"#fff":C.muted}}>💰 Mixte</button>
+                    <button onClick={()=>setPayMode("simple")} style={{flex:1,padding:"5px",border:`1px solid ${payMode==="simple"?C.accent:C.border}`,borderRadius:6,cursor:"pointer",fontSize:10,fontWeight:600,background:payMode==="simple"?C.accent:"transparent",color:payMode==="simple"?"#fff":C.muted}}>Simple</button>
+                    <button onClick={()=>setPayMode("mixte")} style={{flex:1,padding:"5px",border:`1px solid ${payMode==="mixte"?C.blue:C.border}`,borderRadius:6,cursor:"pointer",fontSize:10,fontWeight:600,background:payMode==="mixte"?C.blue:"transparent",color:payMode==="mixte"?"#fff":C.muted}}>💰 Mixte</button>
                   </div>
+
                   {payMode==="simple"&&(
                     <>
                       <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
@@ -515,19 +590,20 @@ export default function AmlyPOS() {
                       </div>
                       {method1==="Espèces"&&(
                         <>
-                          <input style={{...S.input,fontSize:12,padding:"6px 10px"}} type="number" placeholder="Montant reçu (F)" value={amount1} onChange={e=>setAmount1(e.target.value)}/>
+                          <input style={{...S.input,fontSize:12,padding:"7px 10px"}} type="number" placeholder="Montant reçu (F)" value={amount1} onChange={e=>setAmount1(e.target.value)}/>
                           {amount1&&change>0&&(
-                            <div style={{background:"rgba(34,197,94,0.08)",border:"1px solid rgba(34,197,94,0.2)",borderRadius:7,padding:"6px 9px",fontSize:11}}>
-                              <div>Monnaie : <strong style={{color:C.green}}>{fmt(change)} F</strong></div>
+                            <div style={{background:`${C.green}15`,border:`1px solid ${C.green}40`,borderRadius:7,padding:"7px 10px",fontSize:11}}>
+                              Monnaie : <strong style={{color:C.green}}>{fmt(change)} F</strong>
                             </div>
                           )}
                         </>
                       )}
-                      {method1==="Glovo"&&<div style={{background:"rgba(249,115,22,0.1)",border:"1px solid rgba(249,115,22,0.3)",borderRadius:6,padding:"5px 8px",fontSize:10,color:"#fdba74"}}>🛵 Encaissement Glovo à la semaine</div>}
+                      {method1==="Glovo"&&<div style={{background:`${C.orange}15`,border:`1px solid ${C.orange}40`,borderRadius:6,padding:"5px 8px",fontSize:10,color:C.orange}}>🛵 Encaissement Glovo à la semaine</div>}
                     </>
                   )}
+
                   {payMode==="mixte"&&(
-                    <div style={{background:C.dark3,borderRadius:7,padding:8,display:"flex",flexDirection:"column",gap:6}}>
+                    <div style={{background:C.surface2,borderRadius:8,padding:10,display:"flex",flexDirection:"column",gap:6}}>
                       <div style={{fontSize:10,color:C.muted,fontWeight:600}}>Paiement 1</div>
                       <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>{METHODS.map(m=><MBtn key={m} m={m} active={method1===m} onClick={()=>setMethod1(m)}/>)}</div>
                       <input style={{...S.input,fontSize:11,padding:"5px 9px"}} type="number" placeholder={`Montant ${method1} (F)`} value={amount1} onChange={e=>setAmount1(e.target.value)}/>
@@ -537,9 +613,10 @@ export default function AmlyPOS() {
                       {(amount1||amount2)&&<div style={{borderTop:`1px solid ${C.border}`,paddingTop:5,fontSize:11}}>{totalPaid>=cartTotal?<div style={{color:C.green,fontWeight:700}}>✓ Rendu : {fmt(change)} F</div>:<div style={{color:C.red}}>⚠ Manque : {fmt(cartTotal-totalPaid)} F</div>}</div>}
                     </div>
                   )}
+
                   <button style={{...S.btnB,...(!cart.length||loading?{opacity:.4,cursor:"not-allowed"}:{})}} onClick={()=>cart.length&&!loading&&sendToKitchen()}>👨‍🍳 Envoyer en cuisine</button>
                   <button style={{...S.btnG,...(!cart.length||loading?{opacity:.4,cursor:"not-allowed"}:{})}} onClick={()=>cart.length&&!loading&&setModal("confirm")}>✓ Encaisser directement</button>
-                  <button style={S.btnO} onClick={()=>setCart([])}>Annuler</button>
+                  <button style={S.btnO} onClick={()=>setCart([])}>Vider le panier</button>
                 </div>
               </div>
             </div>
@@ -547,22 +624,24 @@ export default function AmlyPOS() {
 
           {/* ══ TABLES ══ */}
           {page==="tables"&&(
-            <div style={{flex:1,overflow:"auto",padding:20}}>
+            <div style={{flex:1,overflow:"auto",padding:20,background:C.bg}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-                <span style={{fontWeight:700,fontSize:16}}>🪑 Plan de salle</span>
+                <span style={{fontWeight:800,fontSize:17,color:C.txt}}>🪑 Plan de salle</span>
               </div>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:12}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:14}}>
                 {tables.map(t=>(
                   <div key={t.id} style={{...S.card,cursor:"pointer",textAlign:"center",transition:"all .15s",
-                    borderColor:t.statut==="occupée"?C.gold:t.statut==="libre"?"rgba(34,197,94,0.3)":C.border}}
-                    onClick={()=>selectTable(t)}>
-                    <div style={{fontSize:28,marginBottom:6}}>🪑</div>
-                    <div style={{fontWeight:800,fontSize:16}}>{t.label}</div>
+                    borderColor:t.statut==="occupée"?C.accent:t.statut==="libre"?`${C.green}40`:C.cardBorder}}
+                    onClick={()=>selectTable(t)}
+                    onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow=`0 6px 20px ${C.accent}25`;}}
+                    onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow=C.shadow;}}>
+                    <div style={{fontSize:30,marginBottom:6}}>🪑</div>
+                    <div style={{fontWeight:800,fontSize:17,color:C.txt}}>{t.label}</div>
                     <div style={{fontSize:11,color:C.muted,marginTop:2}}>{t.capacite} personnes</div>
-                    <div style={{marginTop:6}}>
-                      <span style={{display:"inline-block",padding:"2px 10px",borderRadius:10,fontSize:11,fontWeight:600,
-                        background:t.statut==="libre"?"rgba(34,197,94,0.15)":"rgba(201,168,76,0.15)",
-                        color:t.statut==="libre"?C.green:C.gold}}>
+                    <div style={{marginTop:8}}>
+                      <span style={{display:"inline-block",padding:"3px 12px",borderRadius:10,fontSize:11,fontWeight:600,
+                        background:t.statut==="libre"?`${C.green}15`:`${C.accent}15`,
+                        color:t.statut==="libre"?C.green:C.accent}}>
                         {t.statut}
                       </span>
                     </div>
@@ -574,10 +653,10 @@ export default function AmlyPOS() {
 
           {/* ══ CUISINE ══ */}
           {page==="cuisine"&&(
-            <div style={{flex:1,overflow:"auto",padding:16,background:"#0a0a0a"}}>
+            <div style={{flex:1,overflow:"auto",padding:16,background:darkMode?"#0a0a0a":C.bg}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-                <span style={{fontWeight:800,fontSize:18}}>👨‍🍳 Écran Cuisine</span>
-                <button onClick={loadOrders} style={{background:C.dark2,border:`1px solid ${C.border}`,borderRadius:6,padding:"5px 12px",cursor:"pointer",color:C.txt,fontSize:11}}>🔄 Rafraîchir</button>
+                <span style={{fontWeight:800,fontSize:18,color:C.txt}}>👨‍🍳 Écran Cuisine</span>
+                <button onClick={loadOrders} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:6,padding:"5px 12px",cursor:"pointer",color:C.txt,fontSize:11}}>🔄 Rafraîchir</button>
               </div>
               {orders.length===0?(
                 <div style={{textAlign:"center",padding:60,color:C.muted}}>
@@ -587,27 +666,27 @@ export default function AmlyPOS() {
               ):(
                 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:14}}>
                   {orders.map(order=>(
-                    <div key={order.id} style={{background:order.statut==="en_attente"?"#1a0f00":"#001a0f",border:`2px solid ${order.statut==="en_attente"?C.orange:C.green}`,borderRadius:12,padding:14,display:"flex",flexDirection:"column",gap:10}}>
+                    <div key={order.id} style={{background:order.statut==="en_attente"?(darkMode?"#1a0f00":"#fff8f0"):(darkMode?"#001a0f":"#f0fff8"),border:`2px solid ${order.statut==="en_attente"?C.orange:C.green}`,borderRadius:12,padding:14,display:"flex",flexDirection:"column",gap:10}}>
                       <div style={{display:"flex",justifyContent:"space-between"}}>
-                        <span style={{fontWeight:800,fontSize:14,color:C.gold}}>{order.reference}</span>
+                        <span style={{fontWeight:800,fontSize:14,color:C.accent}}>{order.reference}</span>
                         <span style={{fontSize:10,color:C.muted}}>{order.created_at?new Date(order.created_at).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}):""}</span>
                       </div>
                       <div style={{display:"flex",flexDirection:"column",gap:5}}>
                         {(orderItems[order.id]||[]).map(item=>(
-                          <div key={item.id} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 8px",borderRadius:6,background:item.statut==="pret"?"rgba(34,197,94,0.1)":"rgba(255,255,255,0.04)"}}>
-                            <span style={{fontSize:14,fontWeight:800,color:C.gold,minWidth:20}}>×{item.qty}</span>
-                            <span style={{flex:1,fontSize:12,fontWeight:600}}>{item.product_name}</span>
+                          <div key={item.id} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 8px",borderRadius:6,background:item.statut==="pret"?`${C.green}15`:`${C.surface2}`}}>
+                            <span style={{fontSize:14,fontWeight:800,color:C.accent,minWidth:20}}>×{item.qty}</span>
+                            <span style={{flex:1,fontSize:12,fontWeight:600,color:C.txt}}>{item.product_name}</span>
                             <button onClick={()=>updateItemStatut(item.id,order.id,item.statut==="pret"?"en_attente":"pret")}
-                              style={{padding:"3px 8px",borderRadius:5,border:"none",cursor:"pointer",fontSize:10,fontWeight:700,background:item.statut==="pret"?C.green:C.dark3,color:item.statut==="pret"?"#000":C.muted}}>
+                              style={{padding:"3px 8px",borderRadius:5,border:"none",cursor:"pointer",fontSize:10,fontWeight:700,background:item.statut==="pret"?C.green:C.surface,color:item.statut==="pret"?"#fff":C.muted}}>
                               {item.statut==="pret"?"✓ Prêt":"Marquer prêt"}
                             </button>
                           </div>
                         ))}
                       </div>
                       <div style={{display:"flex",gap:6}}>
-                        {order.statut==="en_attente"&&<button onClick={()=>updateOrderStatut(order.id,"en_preparation")} style={{flex:1,padding:"7px",borderRadius:7,border:"none",cursor:"pointer",background:C.orange,color:"#000",fontWeight:700,fontSize:11}}>🔥 Démarrer</button>}
-                        {order.statut==="en_preparation"&&<button onClick={()=>updateOrderStatut(order.id,"pret")} style={{flex:1,padding:"7px",borderRadius:7,border:"none",cursor:"pointer",background:C.green,color:"#000",fontWeight:700,fontSize:11}}>✅ Prêt à servir</button>}
-                        {order.statut==="pret"&&<button onClick={()=>updateOrderStatut(order.id,"servi")} style={{flex:1,padding:"7px",borderRadius:7,border:"none",cursor:"pointer",background:C.dark3,color:C.muted,fontWeight:700,fontSize:11}}>Marquer servi</button>}
+                        {order.statut==="en_attente"&&<button onClick={()=>updateOrderStatut(order.id,"en_preparation")} style={{flex:1,padding:"7px",borderRadius:7,border:"none",cursor:"pointer",background:C.orange,color:"#fff",fontWeight:700,fontSize:11}}>🔥 Démarrer</button>}
+                        {order.statut==="en_preparation"&&<button onClick={()=>updateOrderStatut(order.id,"pret")} style={{flex:1,padding:"7px",borderRadius:7,border:"none",cursor:"pointer",background:C.green,color:"#fff",fontWeight:700,fontSize:11}}>✅ Prêt à servir</button>}
+                        {order.statut==="pret"&&<button onClick={()=>updateOrderStatut(order.id,"servi")} style={{flex:1,padding:"7px",borderRadius:7,border:"none",cursor:"pointer",background:C.surface2,color:C.muted,fontWeight:700,fontSize:11}}>Marquer servi</button>}
                       </div>
                     </div>
                   ))}
@@ -618,20 +697,16 @@ export default function AmlyPOS() {
 
           {/* ══ INGRÉDIENTS ══ */}
           {page==="ingredients"&&(
-            <div style={{flex:1,overflow:"auto",padding:16}}>
+            <div style={{flex:1,overflow:"auto",padding:16,background:C.bg}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-                <span style={{fontWeight:700,fontSize:15}}>🧂 Stock Ingrédients</span>
+                <span style={{fontWeight:700,fontSize:15,color:C.txt}}>🧂 Stock Ingrédients</span>
                 <button style={{...S.btnG,width:"auto",padding:"7px 14px"}} onClick={()=>setModal("addIng")}>+ Ajouter</button>
               </div>
               {ingCritiques.length>0&&(
-                <div style={{background:"rgba(239,68,68,0.1)",border:`1px solid ${C.red}`,borderRadius:10,padding:12,marginBottom:14}}>
+                <div style={{background:`${C.red}10`,border:`1px solid ${C.red}`,borderRadius:10,padding:12,marginBottom:14}}>
                   <div style={{fontWeight:700,color:C.red,marginBottom:8}}>⚠️ Ingrédients en rupture ou stock critique</div>
                   <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-                    {ingCritiques.map(i=>(
-                      <span key={i.id} style={{background:"rgba(239,68,68,0.15)",color:C.red,borderRadius:6,padding:"3px 10px",fontSize:11,fontWeight:600}}>
-                        {i.name} — {i.stock} {i.unit}
-                      </span>
-                    ))}
+                    {ingCritiques.map(i=>(<span key={i.id} style={{background:`${C.red}20`,color:C.red,borderRadius:6,padding:"3px 10px",fontSize:11,fontWeight:600}}>{i.name} — {i.stock} {i.unit}</span>))}
                   </div>
                 </div>
               )}
@@ -645,25 +720,15 @@ export default function AmlyPOS() {
                       const statutColor = statut==="Épuisé"?C.red:statut==="Critique"?"#fbbf24":C.green;
                       return(
                         <tr key={i.id}>
-                          <td style={{...S.td,fontWeight:600}}>{i.name}</td>
-                          <td style={S.td}>{i.unit}</td>
+                          <td style={{...S.td,fontWeight:600,color:C.txt}}>{i.name}</td>
+                          <td style={{...S.td,color:C.muted}}>{i.unit}</td>
                           <td style={{...S.td,fontWeight:700,color:i.stock<=i.stock_min?C.red:C.txt}}>{i.stock}</td>
-                          <td style={S.td}>{i.stock_min}</td>
-                          <td style={S.td}>{fmt(i.cost_unit)} F</td>
+                          <td style={{...S.td,color:C.muted}}>{i.stock_min}</td>
+                          <td style={{...S.td,color:C.muted}}>{fmt(i.cost_unit)} F</td>
+                          <td style={S.td}><span style={{display:"inline-block",padding:"2px 8px",borderRadius:8,fontSize:10,fontWeight:600,background:`${statutColor}22`,color:statutColor}}>{statut}</span></td>
                           <td style={S.td}>
-                            <span style={{display:"inline-block",padding:"2px 8px",borderRadius:8,fontSize:10,fontWeight:600,background:`${statutColor}22`,color:statutColor}}>
-                              {statut}
-                            </span>
-                          </td>
-                          <td style={S.td}>
-                            <div style={{display:"flex",gap:4,alignItems:"center"}}>
-                              <input
-                                type="number"
-                                defaultValue={i.stock}
-                                onBlur={e=>{ if(Number(e.target.value)!==i.stock) updateIngredientStock(i.id, e.target.value); }}
-                                style={{...S.input,width:70,padding:"3px 7px",fontSize:11,textAlign:"center"}}
-                              />
-                            </div>
+                            <input type="number" defaultValue={i.stock} onBlur={e=>{ if(Number(e.target.value)!==i.stock) updateIngredientStock(i.id, e.target.value); }}
+                              style={{...S.input,width:70,padding:"3px 7px",fontSize:11,textAlign:"center"}}/>
                           </td>
                         </tr>
                       );
@@ -676,33 +741,28 @@ export default function AmlyPOS() {
 
           {/* ══ RECETTES ══ */}
           {page==="recettes"&&(
-            <div style={{flex:1,overflow:"auto",padding:16}}>
-              <div style={{fontWeight:700,fontSize:15,marginBottom:14}}>📖 Gestion des Recettes</div>
+            <div style={{flex:1,overflow:"auto",padding:16,background:C.bg}}>
+              <div style={{fontWeight:700,fontSize:15,marginBottom:14,color:C.txt}}>📖 Gestion des Recettes</div>
               <div style={{display:"flex",gap:14,flexWrap:"wrap"}}>
-                {/* Liste des plats */}
                 <div style={{...S.card,width:220,flexShrink:0}}>
-                  <div style={{fontWeight:700,marginBottom:10,fontSize:13}}>Sélectionner un plat</div>
+                  <div style={{fontWeight:700,marginBottom:10,fontSize:13,color:C.txt}}>Sélectionner un plat</div>
                   <div style={{display:"flex",flexDirection:"column",gap:4}}>
                     {products.map(p=>(
                       <div key={p.id} onClick={()=>setSelProduct(p)}
                         style={{padding:"8px 10px",borderRadius:7,cursor:"pointer",fontSize:12,fontWeight:600,
-                          background:selProduct?.id===p.id?"rgba(201,168,76,0.15)":"transparent",
-                          border:`1px solid ${selProduct?.id===p.id?C.gold:C.border}`,
-                          color:selProduct?.id===p.id?C.gold:C.txt}}>
+                          background:selProduct?.id===p.id?C.accentBg:"transparent",
+                          border:`1px solid ${selProduct?.id===p.id?C.accent:C.border}`,
+                          color:selProduct?.id===p.id?C.accent:C.txt}}>
                         {p.img} {p.name}
                         <div style={{fontSize:10,color:C.muted,fontWeight:400}}>{recettes.filter(r=>r.product_id===p.id).length} ingrédient(s)</div>
                       </div>
                     ))}
                   </div>
                 </div>
-
-                {/* Recette du plat sélectionné */}
                 {selProduct&&(
                   <div style={{flex:1,minWidth:300}}>
                     <div style={{...S.card,marginBottom:12}}>
-                      <div style={{fontWeight:700,fontSize:14,marginBottom:12,color:C.gold}}>
-                        {selProduct.img} {selProduct.name} — Ingrédients
-                      </div>
+                      <div style={{fontWeight:700,fontSize:14,marginBottom:12,color:C.accent}}>{selProduct.img} {selProduct.name} — Ingrédients</div>
                       {recettes.filter(r=>r.product_id===selProduct.id).length===0?(
                         <div style={{color:C.muted,fontSize:12,textAlign:"center",padding:20}}>Aucun ingrédient défini pour ce plat</div>
                       ):(
@@ -713,9 +773,9 @@ export default function AmlyPOS() {
                               const ing = ingredients.find(i=>i.id===r.ingredient_id);
                               return(
                                 <tr key={r.id}>
-                                  <td style={{...S.td,fontWeight:600}}>{ing?.name||"?"}</td>
-                                  <td style={{...S.td,color:C.gold,fontWeight:700}}>{r.quantite}</td>
-                                  <td style={S.td}>{ing?.unit||""}</td>
+                                  <td style={{...S.td,fontWeight:600,color:C.txt}}>{ing?.name||"?"}</td>
+                                  <td style={{...S.td,color:C.accent,fontWeight:700}}>{r.quantite}</td>
+                                  <td style={{...S.td,color:C.muted}}>{ing?.unit||""}</td>
                                   <td style={S.td}><button onClick={()=>deleteRecette(r.id)} style={S.btnR}>✕</button></td>
                                 </tr>
                               );
@@ -724,10 +784,8 @@ export default function AmlyPOS() {
                         </table>
                       )}
                     </div>
-
-                    {/* Ajouter ingrédient à la recette */}
                     <div style={S.card}>
-                      <div style={{fontWeight:700,marginBottom:10,fontSize:13}}>+ Ajouter un ingrédient</div>
+                      <div style={{fontWeight:700,marginBottom:10,fontSize:13,color:C.txt}}>+ Ajouter un ingrédient</div>
                       <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                         <div style={{flex:2,minWidth:150}}>
                           <div style={{fontSize:10,color:C.muted,marginBottom:3}}>Ingrédient</div>
@@ -753,10 +811,10 @@ export default function AmlyPOS() {
 
           {/* ══ PRODUITS ══ */}
           {page==="produits"&&(
-            <div style={{flex:1,overflow:"auto",padding:16}}>
+            <div style={{flex:1,overflow:"auto",padding:16,background:C.bg}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-                <span style={{fontWeight:700,fontSize:15}}>Gestion des Produits</span>
-                <button style={{...S.btnG,width:"auto",padding:"7px 14px"}} onClick={()=>setModal("addProd")}>+ Nouveau</button>
+                <span style={{fontWeight:700,fontSize:15,color:C.txt}}>Gestion des Produits</span>
+                <button style={{...S.btnG,width:"auto",padding:"7px 14px"}} onClick={()=>{ setImgPreview(""); setModal("addProd"); }}>+ Nouveau produit</button>
               </div>
               <div style={S.card}>
                 <table style={{width:"100%",borderCollapse:"collapse"}}>
@@ -764,11 +822,16 @@ export default function AmlyPOS() {
                   <tbody>
                     {products.map(p=>{const mg=p.price-p.cost,pct=p.price>0?((mg/p.price)*100).toFixed(1):0;return(
                       <tr key={p.id}>
-                        <td style={S.td}><span style={{fontSize:18}}>{p.img}</span></td>
-                        <td style={{...S.td,fontWeight:600}}>{p.name}</td>
-                        <td style={S.td}><span style={{display:"inline-block",padding:"2px 7px",borderRadius:8,fontSize:10,fontWeight:600,background:"rgba(201,168,76,0.15)",color:C.gold}}>{p.cat}</span></td>
-                        <td style={S.td}>{fmt(p.cost)} F</td>
-                        <td style={{...S.td,color:C.gold,fontWeight:700}}>{fmt(p.price)} F</td>
+                        <td style={S.td}>
+                          {p.img_url
+                            ?<img src={p.img_url} alt={p.name} style={{width:32,height:32,objectFit:"cover",borderRadius:6}}/>
+                            :<span style={{fontSize:20}}>{p.img}</span>
+                          }
+                        </td>
+                        <td style={{...S.td,fontWeight:600,color:C.txt}}>{p.name}</td>
+                        <td style={S.td}><span style={{display:"inline-block",padding:"2px 7px",borderRadius:8,fontSize:10,fontWeight:600,background:C.accentBg,color:C.accent}}>{p.cat}</span></td>
+                        <td style={{...S.td,color:C.muted}}>{fmt(p.cost)} F</td>
+                        <td style={{...S.td,color:C.accent,fontWeight:700}}>{fmt(p.price)} F</td>
                         <td style={{...S.td,color:C.green,fontWeight:700}}>{fmt(mg)} F</td>
                         <td style={{...S.td,color:C.green,fontWeight:700}}>{pct}%</td>
                         <td style={{...S.td,color:p.stock<5?C.red:C.txt}}>{p.stock}</td>
@@ -782,20 +845,20 @@ export default function AmlyPOS() {
 
           {/* ══ VENTES ══ */}
           {page==="ventes"&&(
-            <div style={{flex:1,overflow:"auto",padding:16}}>
-              <div style={{fontWeight:700,fontSize:15,marginBottom:14}}>Historique des Ventes</div>
+            <div style={{flex:1,overflow:"auto",padding:16,background:C.bg}}>
+              <div style={{fontWeight:700,fontSize:15,marginBottom:14,color:C.txt}}>Historique des Ventes</div>
               <div style={S.card}>
                 <table style={{width:"100%",borderCollapse:"collapse"}}>
                   <thead><tr>{["Référence","Date","Vendeur","Mode","Montant",""].map(h=><th key={h} style={S.th}>{h}</th>)}</tr></thead>
                   <tbody>
                     {sales.map(sale=>(
                       <tr key={sale.id}>
-                        <td style={{...S.td,color:C.gold,fontWeight:700}}>{sale.reference}</td>
-                        <td style={S.td}>{sale.created_at?new Date(sale.created_at).toLocaleString("fr-FR"):""}</td>
-                        <td style={S.td}>{sale.vendor}</td>
-                        <td style={S.td}><span style={{display:"inline-block",padding:"2px 7px",borderRadius:8,fontSize:10,fontWeight:600,background:"rgba(59,130,246,0.15)",color:"#93c5fd"}}>{sale.method}</span></td>
+                        <td style={{...S.td,color:C.accent,fontWeight:700}}>{sale.reference}</td>
+                        <td style={{...S.td,color:C.muted}}>{sale.created_at?new Date(sale.created_at).toLocaleString("fr-FR"):""}</td>
+                        <td style={{...S.td,color:C.txt}}>{sale.vendor}</td>
+                        <td style={S.td}><span style={{display:"inline-block",padding:"2px 7px",borderRadius:8,fontSize:10,fontWeight:600,background:`${C.blue}20`,color:C.blue}}>{sale.method}</span></td>
                         <td style={{...S.td,fontWeight:700,color:C.green}}>{fmt(sale.total)} F</td>
-                        <td style={S.td}><button onClick={async()=>{await loadSaleItems(sale.id);setSelSale(sale);setModal("receipt");}} style={{background:"#14532d",color:"#86efac",border:"none",borderRadius:5,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:600}}>Détail</button></td>
+                        <td style={S.td}><button onClick={async()=>{await loadSaleItems(sale.id);setSelSale(sale);setModal("receipt");}} style={{background:`${C.green}15`,color:C.green,border:"none",borderRadius:5,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:600}}>Détail</button></td>
                       </tr>
                     ))}
                   </tbody>
@@ -806,21 +869,23 @@ export default function AmlyPOS() {
 
           {/* ══ STOCK ══ */}
           {page==="stock"&&(
-            <div style={{flex:1,overflow:"auto",padding:16}}>
-              <div style={{fontWeight:700,fontSize:15,marginBottom:14}}>📦 Stock Produits finis</div>
+            <div style={{flex:1,overflow:"auto",padding:16,background:C.bg}}>
+              <div style={{fontWeight:700,fontSize:15,marginBottom:14,color:C.txt}}>📦 Stock Produits finis</div>
               <div style={S.card}>
                 <table style={{width:"100%",borderCollapse:"collapse"}}>
                   <thead><tr>{["","Produit","Cat.","Stock","Statut"].map(h=><th key={h} style={S.th}>{h}</th>)}</tr></thead>
                   <tbody>
                     {products.map(p=>(
                       <tr key={p.id}>
-                        <td style={S.td}><span style={{fontSize:18}}>{p.img}</span></td>
-                        <td style={{...S.td,fontWeight:600}}>{p.name}</td>
-                        <td style={S.td}>{p.cat}</td>
+                        <td style={S.td}>
+                          {p.img_url?<img src={p.img_url} alt={p.name} style={{width:28,height:28,objectFit:"cover",borderRadius:5}}/>:<span style={{fontSize:18}}>{p.img}</span>}
+                        </td>
+                        <td style={{...S.td,fontWeight:600,color:C.txt}}>{p.name}</td>
+                        <td style={{...S.td,color:C.muted}}>{p.cat}</td>
                         <td style={{...S.td,fontWeight:700,color:p.stock<5?C.red:C.txt}}>{p.stock}</td>
                         <td style={S.td}><span style={{display:"inline-block",padding:"2px 8px",borderRadius:8,fontSize:10,fontWeight:600,
-                          background:p.stock===0?"rgba(239,68,68,0.15)":p.stock<5?"rgba(251,191,36,0.15)":"rgba(34,197,94,0.15)",
-                          color:p.stock===0?C.red:p.stock<5?"#fbbf24":C.green}}>
+                          background:p.stock===0?`${C.red}20`:p.stock<5?`${C.orange}20`:`${C.green}20`,
+                          color:p.stock===0?C.red:p.stock<5?C.orange:C.green}}>
                           {p.stock===0?"Épuisé":p.stock<5?"Faible":"En stock"}</span></td>
                       </tr>
                     ))}
@@ -832,33 +897,33 @@ export default function AmlyPOS() {
 
           {/* ══ RAPPORTS ══ */}
           {page==="rapports"&&(
-            <div style={{flex:1,overflow:"auto",padding:16}}>
+            <div style={{flex:1,overflow:"auto",padding:16,background:C.bg}}>
               <div style={{display:"flex",gap:10,marginBottom:16,flexWrap:"wrap"}}>
                 {[
-                  {l:"Ventes totales",v:fmt(totalRev)+" F",i:"🏦",c:C.gold},
+                  {l:"Ventes totales",v:fmt(totalRev)+" F",i:"🏦",c:C.accent},
                   {l:"Aujourd'hui",   v:fmt(todayRev)+" F",i:"📅",c:C.green},
                   {l:"Transactions",  v:sales.length,       i:"💳",c:C.txt},
                   {l:"Glovo",         v:fmt(glovoRev)+" F", i:"🛵",c:C.orange},
                 ].map(c=>(
                   <div key={c.l} style={{...S.card,flex:1,minWidth:120}}>
-                    <div style={{fontSize:18,marginBottom:5}}>{c.i}</div>
-                    <div style={{fontSize:10,color:C.muted,marginBottom:3}}>{c.l}</div>
-                    <div style={{fontSize:15,fontWeight:800,color:c.c}}>{c.v}</div>
+                    <div style={{fontSize:20,marginBottom:5}}>{c.i}</div>
+                    <div style={{fontSize:10,color:C.muted,marginBottom:4,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.05em"}}>{c.l}</div>
+                    <div style={{fontSize:16,fontWeight:800,color:c.c}}>{c.v}</div>
                   </div>
                 ))}
               </div>
               <div style={S.card}>
-                <div style={{fontWeight:700,marginBottom:10}}>Répartition paiements</div>
+                <div style={{fontWeight:700,marginBottom:10,color:C.txt}}>Répartition paiements</div>
                 {(()=>{
                   const bm=METHODS.map((m,i)=>({name:m,v:sales.filter(s=>s.method?.includes(m)).reduce((a,s)=>a+s.total,0),color:PAY_COLORS[i]})).filter(m=>m.v>0);
                   return bm.length===0?<div style={{color:C.muted,fontSize:12,textAlign:"center",padding:20}}>Aucune vente</div>:(
                     <div style={{display:"flex",gap:14,alignItems:"center",flexWrap:"wrap"}}>
                       <PieChart width={130} height={130}><Pie data={bm} dataKey="v" cx={60} cy={60} innerRadius={34} outerRadius={58}>{bm.map((d,i)=><Cell key={i} fill={d.color}/>)}</Pie></PieChart>
-                      <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                      <div style={{display:"flex",flexDirection:"column",gap:7}}>
                         {bm.map(d=><div key={d.name} style={{display:"flex",alignItems:"center",gap:7,fontSize:11}}>
                           <span style={{width:8,height:8,borderRadius:2,background:d.color,flexShrink:0}}></span>
                           <span style={{color:C.muted}}>{d.name}</span>
-                          <span style={{fontWeight:700,marginLeft:6}}>{fmt(d.v)} F</span>
+                          <span style={{fontWeight:700,marginLeft:6,color:C.txt}}>{fmt(d.v)} F</span>
                         </div>)}
                       </div>
                     </div>
@@ -870,22 +935,50 @@ export default function AmlyPOS() {
 
           {/* ══ PARAMÈTRES ══ */}
           {page==="parametres"&&(
-            <div style={{flex:1,overflow:"auto",padding:16}}>
-              <div style={{fontWeight:700,fontSize:15,marginBottom:14}}>Paramètres</div>
+            <div style={{flex:1,overflow:"auto",padding:16,background:C.bg}}>
+              <div style={{fontWeight:700,fontSize:15,marginBottom:14,color:C.txt}}>Paramètres</div>
+
+              {/* Thème */}
               <div style={{...S.card,marginBottom:14}}>
+                <div style={{fontWeight:700,marginBottom:10,color:C.txt}}>🎨 Apparence</div>
+                <div style={{display:"flex",gap:10}}>
+                  {[
+                    {label:"🌙 Mode sombre",dark:true},
+                    {label:"☀️ Mode clair",dark:false},
+                  ].map(opt=>(
+                    <button key={String(opt.dark)} onClick={()=>setDarkMode(opt.dark)}
+                      style={{flex:1,padding:"10px",borderRadius:9,border:`2px solid ${darkMode===opt.dark?C.accent:C.border}`,cursor:"pointer",
+                        background:darkMode===opt.dark?C.accentBg:"transparent",color:darkMode===opt.dark?C.accent:C.muted,fontWeight:700,fontSize:13}}>
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Infos commerce */}
+              <div style={S.card}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-                  <div style={{fontWeight:700}}>🏪 Informations du commerce</div>
+                  <div style={{fontWeight:700,color:C.txt}}>🏪 Informations du commerce</div>
                   <button onClick={()=>{ if(editShop) showToast("Sauvegardé ✓"); setEditShop(!editShop); }}
-                    style={{background:editShop?C.gold:"transparent",color:editShop?"#000":C.gold,border:`1px solid ${C.gold}`,borderRadius:6,padding:"4px 12px",cursor:"pointer",fontSize:12,fontWeight:600}}>
+                    style={{background:editShop?C.accent:"transparent",color:editShop?"#fff":C.accent,border:`1px solid ${C.accent}`,borderRadius:6,padding:"4px 12px",cursor:"pointer",fontSize:12,fontWeight:600}}>
                     {editShop?"✓ Enregistrer":"Modifier"}
                   </button>
                 </div>
-                {editShop&&(
+                {editShop?(
                   <div style={{display:"flex",flexDirection:"column",gap:9}}>
                     {[{l:"Nom",k:"name"},{l:"Adresse",k:"address"},{l:"Téléphone",k:"phone"}].map(f=>(
                       <div key={f.k}>
                         <div style={{fontSize:11,color:C.muted,marginBottom:3}}>{f.l}</div>
                         <input style={S.input} value={shopInfo[f.k]||""} onChange={e=>setShopInfo(p=>({...p,[f.k]:e.target.value}))}/>
+                      </div>
+                    ))}
+                  </div>
+                ):(
+                  <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                    {[{l:"Nom",k:"name"},{l:"Adresse",k:"address"},{l:"Téléphone",k:"phone"}].map(f=>(
+                      <div key={f.k} style={{display:"flex",justifyContent:"space-between",fontSize:13}}>
+                        <span style={{color:C.muted}}>{f.l}</span>
+                        <span style={{fontWeight:600,color:C.txt}}>{shopInfo[f.k]||"—"}</span>
                       </div>
                     ))}
                   </div>
@@ -896,87 +989,122 @@ export default function AmlyPOS() {
         </div>
       </div>
 
-      {/* ── MODALS ── */}
+      {/* ─── MODALS ─── */}
+      {/* Confirmation encaissement */}
       {modal==="confirm"&&(
-        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000}} onClick={()=>setModal(null)}>
-          <div style={{...S.card,width:400,maxHeight:"80vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
-            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}><HitLogo size={28}/><span style={{fontWeight:800,fontSize:15}}>Confirmer l'encaissement</span></div>
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000}} onClick={()=>setModal(null)}>
+          <div style={{...S.card,width:420,maxHeight:"80vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
+              <AmlyLogo size={28} C={C}/>
+              <span style={{fontWeight:800,fontSize:15,color:C.txt}}>Confirmer l'encaissement</span>
+            </div>
             {cart.map(i=>(
-              <div key={i.id} style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:5}}>
+              <div key={i.id} style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:6,color:C.txt}}>
                 <span>{i.img} {i.name} × {i.qty}</span>
-                <span style={{color:C.gold,fontWeight:700}}>{fmt(i.price*i.qty)} F</span>
+                <span style={{color:C.accent,fontWeight:700}}>{fmt(i.price*i.qty)} F</span>
               </div>
             ))}
-            <div style={{borderTop:`1px solid ${C.border}`,marginTop:8,paddingTop:8,display:"flex",flexDirection:"column",gap:4}}>
+            <div style={{borderTop:`1px solid ${C.border}`,marginTop:10,paddingTop:10,display:"flex",flexDirection:"column",gap:5}}>
               {discount>0&&<div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:C.muted}}><span>Remise</span><span>-{fmt(discount)} F</span></div>}
-              <div style={{display:"flex",justifyContent:"space-between",fontWeight:800,fontSize:14}}><span>Total</span><span style={{color:C.green}}>{fmt(cartTotal)} F</span></div>
+              <div style={{display:"flex",justifyContent:"space-between",fontWeight:800,fontSize:15}}><span style={{color:C.txt}}>Total</span><span style={{color:C.green}}>{fmt(cartTotal)} F</span></div>
               <div style={{fontSize:11,color:C.muted}}>Mode : {methodLabel}</div>
-              {change>0&&<div style={{fontSize:11,color:C.green}}>Monnaie : {fmt(change)} F</div>}
+              {change>0&&<div style={{fontSize:11,color:C.green,fontWeight:600}}>Monnaie à rendre : {fmt(change)} F</div>}
             </div>
-            <div style={{display:"flex",gap:8,marginTop:12}}>
-              <button style={S.btnG} onClick={confirmSale}>✓ Valider</button>
+            <div style={{display:"flex",gap:8,marginTop:14}}>
+              <button style={S.btnG} onClick={confirmSale}>✓ Valider la vente</button>
               <button style={S.btnO} onClick={()=>setModal(null)}>Annuler</button>
             </div>
           </div>
         </div>
       )}
 
+      {/* Ticket de caisse */}
       {modal==="receipt"&&selSale&&(
-        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000}} onClick={()=>setModal(null)}>
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.75)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000}} onClick={()=>setModal(null)}>
           <div style={{...S.card,width:420,maxHeight:"85vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
-            <div style={{textAlign:"center",marginBottom:12,paddingBottom:12,borderBottom:`1px solid ${C.border}`}}>
-              <HitLogo size={36}/>
-              <div style={{fontWeight:900,fontSize:14,color:C.gold,marginTop:6}}>HIT FAST FOOD</div>
+            <div style={{textAlign:"center",marginBottom:14,paddingBottom:14,borderBottom:`1px solid ${C.border}`}}>
+              <AmlyLogo size={38} C={C}/>
+              <div style={{fontWeight:900,fontSize:15,color:C.accent,marginTop:8}}>AMLY-POS</div>
+              <div style={{fontSize:12,color:C.txt,fontWeight:700}}>HIT FAST FOOD</div>
               <div style={{fontSize:11,color:C.muted}}>{shopInfo.address}</div>
             </div>
-            <div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}>
-              <span style={{display:"inline-block",padding:"2px 9px",borderRadius:7,fontSize:11,fontWeight:600,background:"rgba(201,168,76,0.15)",color:C.gold}}>{selSale.reference}</span>
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:12}}>
+              <span style={{display:"inline-block",padding:"2px 9px",borderRadius:7,fontSize:11,fontWeight:600,background:C.accentBg,color:C.accent}}>{selSale.reference}</span>
               <span style={{fontSize:11,color:C.muted}}>{selSale.created_at?new Date(selSale.created_at).toLocaleString("fr-FR"):""}</span>
             </div>
             {saleItems[selSale.id]&&(
-              <table style={{width:"100%",borderCollapse:"collapse",marginBottom:10}}>
+              <table style={{width:"100%",borderCollapse:"collapse",marginBottom:12}}>
                 <thead><tr>{["Produit","Qté","Prix","Total"].map(h=><th key={h} style={S.th}>{h}</th>)}</tr></thead>
                 <tbody>
                   {saleItems[selSale.id].map((i,idx)=>(
                     <tr key={idx}>
-                      <td style={{...S.td,fontSize:11}}>{i.name}</td>
-                      <td style={S.td}>{i.qty}</td>
-                      <td style={S.td}>{fmt(i.price)}</td>
-                      <td style={{...S.td,color:C.gold,fontWeight:700}}>{fmt(i.price*i.qty)}</td>
+                      <td style={{...S.td,fontSize:11,color:C.txt}}>{i.name}</td>
+                      <td style={{...S.td,color:C.muted}}>{i.qty}</td>
+                      <td style={{...S.td,color:C.muted}}>{fmt(i.price)}</td>
+                      <td style={{...S.td,color:C.accent,fontWeight:700}}>{fmt(i.price*i.qty)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             )}
-            <div style={{background:C.dark3,borderRadius:9,padding:11,display:"flex",flexDirection:"column",gap:5,fontSize:12,marginBottom:12}}>
-              <div style={{display:"flex",justifyContent:"space-between",fontWeight:800,fontSize:14}}><span>Total</span><span style={{color:C.green}}>{fmt(selSale.total)} F</span></div>
-              <div style={{display:"flex",justifyContent:"space-between"}}><span style={{color:C.muted}}>Mode</span><span style={{color:"#93c5fd",fontSize:11}}>{selSale.method}</span></div>
-              <div style={{display:"flex",justifyContent:"space-between"}}><span style={{color:C.muted}}>Vendeur</span><span>{selSale.vendor}</span></div>
+            <div style={{background:C.surface2,borderRadius:9,padding:12,display:"flex",flexDirection:"column",gap:6,fontSize:12,marginBottom:14}}>
+              <div style={{display:"flex",justifyContent:"space-between",fontWeight:800,fontSize:15}}><span style={{color:C.txt}}>Total</span><span style={{color:C.green}}>{fmt(selSale.total)} F</span></div>
+              <div style={{display:"flex",justifyContent:"space-between"}}><span style={{color:C.muted}}>Mode</span><span style={{color:C.blue,fontSize:11}}>{selSale.method}</span></div>
+              <div style={{display:"flex",justifyContent:"space-between"}}><span style={{color:C.muted}}>Vendeur</span><span style={{color:C.txt}}>{selSale.vendor}</span></div>
             </div>
+            <div style={{textAlign:"center",fontSize:10,color:C.muted,marginBottom:12}}>Merci pour votre visite ! — HIT Fast Food</div>
             <button style={S.btnG} onClick={()=>setModal(null)}>Fermer</button>
           </div>
         </div>
       )}
 
+      {/* Ajout produit avec upload photo */}
       {modal==="addProd"&&(
-        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000}} onClick={()=>setModal(null)}>
-          <div style={{...S.card,width:380}} onClick={e=>e.stopPropagation()}>
-            <div style={{fontWeight:800,fontSize:15,marginBottom:14}}>Nouveau produit</div>
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.75)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000}} onClick={()=>setModal(null)}>
+          <div style={{...S.card,width:400,maxHeight:"88vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+            <div style={{fontWeight:800,fontSize:15,marginBottom:16,color:C.txt}}>Nouveau produit</div>
+
+            {/* Upload photo */}
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,color:C.muted,marginBottom:6,fontWeight:600}}>PHOTO DU PRODUIT</div>
+              <div style={{display:"flex",gap:10,alignItems:"center"}}>
+                {imgPreview
+                  ? <img src={imgPreview} alt="preview" style={{width:72,height:72,objectFit:"cover",borderRadius:10,border:`2px solid ${C.accent}`,flexShrink:0}}/>
+                  : <div style={{width:72,height:72,borderRadius:10,border:`2px dashed ${C.border}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,background:C.surface2,flexShrink:0,cursor:"pointer"}} onClick={()=>fileInputRef.current?.click()}>📷</div>
+                }
+                <div style={{display:"flex",flexDirection:"column",gap:6,flex:1}}>
+                  <button onClick={()=>fileInputRef.current?.click()}
+                    style={{...S.btnO,padding:"7px 10px",fontSize:12}}>
+                    📁 Choisir une image
+                  </button>
+                  <input ref={fileInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>handleImageFile(e.target.files[0])}/>
+                  <div style={{fontSize:10,color:C.muted}}>Ou coller une URL :</div>
+                  <input style={{...S.input,fontSize:11}} placeholder="https://..." value={newP.img_url||""} onChange={e=>{setNewP(p=>({...p,img_url:e.target.value}));setImgPreview(e.target.value);}}/>
+                </div>
+              </div>
+            </div>
+
             <div style={{display:"flex",flexDirection:"column",gap:9}}>
-              {[{l:"Nom",k:"name",t:"text",p:"Ex: Poulet braisé"},{l:"Emoji",k:"img",t:"text",p:"🍗"},{l:"URL image (optionnel)",k:"img_url",t:"text",p:"https://..."},{l:"Prix (FCFA)",k:"price",t:"number",p:"5000"},{l:"Coût achat (FCFA)",k:"cost",t:"number",p:"2000"},{l:"Stock",k:"stock",t:"number",p:"10"}].map(f=>(
+              {[
+                {l:"Nom du produit",k:"name",t:"text",p:"Ex: Poulet braisé"},
+                {l:"Emoji (si pas de photo)",k:"img",t:"text",p:"🍗"},
+                {l:"Prix de vente (FCFA)",k:"price",t:"number",p:"5000"},
+                {l:"Coût d'achat (FCFA)",k:"cost",t:"number",p:"2000"},
+                {l:"Stock initial",k:"stock",t:"number",p:"10"},
+              ].map(f=>(
                 <div key={f.k}>
-                  <div style={{fontSize:10,color:C.muted,marginBottom:3}}>{f.l}</div>
+                  <div style={{fontSize:10,color:C.muted,marginBottom:3,fontWeight:600}}>{f.l.toUpperCase()}</div>
                   <input style={S.input} type={f.t} placeholder={f.p} value={newP[f.k]||""} onChange={e=>setNewP(p=>({...p,[f.k]:e.target.value}))}/>
                 </div>
               ))}
               <div>
-                <div style={{fontSize:10,color:C.muted,marginBottom:3}}>Catégorie</div>
+                <div style={{fontSize:10,color:C.muted,marginBottom:3,fontWeight:600}}>CATÉGORIE</div>
                 <select style={S.input} value={newP.cat} onChange={e=>setNewP(p=>({...p,cat:e.target.value}))}>
                   {["Plats","Boissons","Desserts"].map(c=><option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div style={{display:"flex",gap:8,marginTop:4}}>
-                <button style={S.btnG} onClick={addProduct}>Ajouter</button>
+                <button style={S.btnG} onClick={addProduct}>Ajouter le produit</button>
                 <button style={S.btnO} onClick={()=>setModal(null)}>Annuler</button>
               </div>
             </div>
@@ -984,19 +1112,20 @@ export default function AmlyPOS() {
         </div>
       )}
 
+      {/* Ajout ingrédient */}
       {modal==="addIng"&&(
-        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000}} onClick={()=>setModal(null)}>
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.75)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000}} onClick={()=>setModal(null)}>
           <div style={{...S.card,width:380}} onClick={e=>e.stopPropagation()}>
-            <div style={{fontWeight:800,fontSize:15,marginBottom:14}}>Nouvel ingrédient</div>
+            <div style={{fontWeight:800,fontSize:15,marginBottom:16,color:C.txt}}>Nouvel ingrédient</div>
             <div style={{display:"flex",flexDirection:"column",gap:9}}>
               {[{l:"Nom",k:"name",t:"text",p:"Ex: Farine"},{l:"Stock actuel",k:"stock",t:"number",p:"10"},{l:"Stock minimum",k:"stock_min",t:"number",p:"2"},{l:"Coût par unité (FCFA)",k:"cost_unit",t:"number",p:"500"}].map(f=>(
                 <div key={f.k}>
-                  <div style={{fontSize:10,color:C.muted,marginBottom:3}}>{f.l}</div>
+                  <div style={{fontSize:10,color:C.muted,marginBottom:3,fontWeight:600}}>{f.l.toUpperCase()}</div>
                   <input style={S.input} type={f.t} placeholder={f.p} value={newI[f.k]||""} onChange={e=>setNewI(p=>({...p,[f.k]:e.target.value}))}/>
                 </div>
               ))}
               <div>
-                <div style={{fontSize:10,color:C.muted,marginBottom:3}}>Unité</div>
+                <div style={{fontSize:10,color:C.muted,marginBottom:3,fontWeight:600}}>UNITÉ</div>
                 <select style={S.input} value={newI.unit} onChange={e=>setNewI(p=>({...p,unit:e.target.value}))}>
                   {["kg","g","l","ml","pièce","tranche","bouteille","sachet"].map(u=><option key={u} value={u}>{u}</option>)}
                 </select>
