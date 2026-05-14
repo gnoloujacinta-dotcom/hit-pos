@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, BarChart, Bar } from "recharts";
+import { PieChart, Pie, Cell } from "recharts";
 
 // ─── SUPABASE ────────────────────────────────────────────────────────────────
 const URL_ = "https://hitghrlrfbwvefbijxtz.supabase.co";
@@ -30,7 +30,6 @@ const DEFAULT_PRODUCTS = [
   {name:"Gâteau Chocolat",cat:"Desserts",price:2500,cost:900,stock:7,img:"🍰"},
 ];
 
-// ─── COULEURS ────────────────────────────────────────────────────────────────
 const C = {
   gold:"#c9a84c", goldL:"#e8c96a", dark:"#0f0f0f", dark2:"#1a1a1a", dark3:"#242424",
   txt:"#f0ede8", muted:"#777", green:"#22c55e", red:"#ef4444", blue:"#3b82f6",
@@ -39,7 +38,6 @@ const C = {
 
 const fmt = n => new Intl.NumberFormat("fr-FR").format(n||0);
 
-// ─── LOGO HIT ────────────────────────────────────────────────────────────────
 const HitLogo = ({size=32}) => (
   <div style={{width:size,height:size,background:"linear-gradient(135deg,#f5c400,#e8a800)",borderRadius:Math.round(size*0.2),
     display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,
@@ -49,7 +47,6 @@ const HitLogo = ({size=32}) => (
   </div>
 );
 
-// ─── STYLES ──────────────────────────────────────────────────────────────────
 const S = {
   card:  {background:C.dark2, border:`1px solid ${C.border}`, borderRadius:12, padding:16},
   th:    {textAlign:"left",fontSize:10,color:C.muted,fontWeight:600,padding:"7px 10px",borderBottom:`1px solid ${C.border}`,textTransform:"uppercase"},
@@ -58,41 +55,46 @@ const S = {
   btnG:  {background:`linear-gradient(135deg,${C.gold},${C.goldL})`,color:"#000",border:"none",borderRadius:8,padding:"10px 16px",fontWeight:700,cursor:"pointer",fontSize:13,width:"100%"},
   btnO:  {background:"transparent",color:C.muted,border:`1px solid ${C.border}`,borderRadius:8,padding:"8px 16px",fontWeight:600,cursor:"pointer",fontSize:13,width:"100%"},
   btnB:  {background:C.blue,color:"#fff",border:"none",borderRadius:8,padding:"10px 16px",fontWeight:700,cursor:"pointer",fontSize:13,width:"100%"},
+  btnR:  {background:C.red,color:"#fff",border:"none",borderRadius:8,padding:"6px 12px",fontWeight:700,cursor:"pointer",fontSize:12},
 };
 
-// ─── APP ─────────────────────────────────────────────────────────────────────
 export default function AmlyPOS() {
-  const [role,      setRole]     = useState("admin");
-  const [page,      setPage]     = useState("caisse");
-  const [products,  setProducts] = useState([]);
-  const [sales,     setSales]    = useState([]);
-  const [tables,    setTables]   = useState([]);
-  const [orders,    setOrders]   = useState([]);
-  const [orderItems,setOrderItems]=useState({});
-  const [saleItems, setSaleItems]= useState({});
-  const [cart,      setCart]     = useState([]);
-  const [cat,       setCat]      = useState("Tout");
-  const [search,    setSearch]   = useState("");
-  const [loading,   setLoading]  = useState(true);
-  const [modal,     setModal]    = useState(null);
-  const [selSale,   setSelSale]  = useState(null);
-  const [selTable,  setSelTable] = useState(null);
-  const [orderType, setOrderType]= useState("sur_place");
-  const [toast,     setToast]    = useState(null);
-  const [newP,      setNewP]     = useState({name:"",cat:"Plats",price:"",cost:"",stock:"",img:"🍽️"});
-  const [payMode,   setPayMode]  = useState("simple");
-  const [method1,   setMethod1]  = useState("Espèces");
-  const [method2,   setMethod2]  = useState("Wave");
-  const [amount1,   setAmount1]  = useState("");
-  const [amount2,   setAmount2]  = useState("");
-  const [discount,  setDiscount] = useState(0);
-  const [rendMode,  setRendMode] = useState("Espèces");
-  const [shopInfo,  setShopInfo] = useState({name:"HIT Fast Food", address:"Grand-Bassam, Côte d'Ivoire", phone:""});
-  const [editShop,  setEditShop] = useState(false);
-  const [dbStatus,  setDbStatus] = useState("checking"); // checking | ok | error
+  const [role,       setRole]      = useState("admin");
+  const [page,       setPage]      = useState("caisse");
+  const [products,   setProducts]  = useState([]);
+  const [sales,      setSales]     = useState([]);
+  const [tables,     setTables]    = useState([]);
+  const [orders,     setOrders]    = useState([]);
+  const [orderItems, setOrderItems]= useState({});
+  const [saleItems,  setSaleItems] = useState({});
+  const [ingredients,setIngredients]=useState([]);
+  const [recettes,   setRecettes]  = useState([]);
+  const [cart,       setCart]      = useState([]);
+  const [cat,        setCat]       = useState("Tout");
+  const [search,     setSearch]    = useState("");
+  const [loading,    setLoading]   = useState(true);
+  const [modal,      setModal]     = useState(null);
+  const [selSale,    setSelSale]   = useState(null);
+  const [selTable,   setSelTable]  = useState(null);
+  const [selProduct, setSelProduct]= useState(null);
+  const [orderType,  setOrderType] = useState("sur_place");
+  const [toast,      setToast]     = useState(null);
+  const [dbStatus,   setDbStatus]  = useState("checking");
+  const [newP,       setNewP]      = useState({name:"",cat:"Plats",price:"",cost:"",stock:"",img:"🍽️"});
+  const [newI,       setNewI]      = useState({name:"",unit:"kg",stock:"",stock_min:"",cost_unit:""});
+  const [newR,       setNewR]      = useState({ingredient_id:"",quantite:""});
+  const [payMode,    setPayMode]   = useState("simple");
+  const [method1,    setMethod1]   = useState("Espèces");
+  const [method2,    setMethod2]   = useState("Wave");
+  const [amount1,    setAmount1]   = useState("");
+  const [amount2,    setAmount2]   = useState("");
+  const [discount,   setDiscount]  = useState(0);
+  const [rendMode,   setRendMode]  = useState("Espèces");
+  const [shopInfo,   setShopInfo]  = useState({name:"HIT Fast Food", address:"Grand-Bassam, Côte d'Ivoire", phone:""});
+  const [editShop,   setEditShop]  = useState(false);
+  const [ingSearch,  setIngSearch] = useState("");
 
   const kdsInterval = useRef(null);
-
   const showToast = (msg, err=false) => { setToast({msg,err}); setTimeout(()=>setToast(null),2500); };
 
   useEffect(() => {
@@ -107,36 +109,22 @@ export default function AmlyPOS() {
     setLoading(true);
     try {
       let prods = await sb.get("products");
-      // Vérifier si c'est une erreur Supabase
-      if(prods && prods.code) {
-        console.error("Supabase error:", prods);
-        setDbStatus("error");
-        showToast("Erreur DB: " + (prods.message || prods.code), true);
-        setLoading(false);
-        return;
-      }
-      if(!prods || prods.length===0){
-        for(const p of DEFAULT_PRODUCTS) await sb.insert("products",p);
-        prods = await sb.get("products");
-      }
-      setProducts(Array.isArray(prods) ? prods : []);
-      const s = await sb.get("sales");
-      setSales(Array.isArray(s) ? s : []);
-      const t = await sb.get("tables_restaurant","&order=numero.asc");
-      setTables(Array.isArray(t) ? t : []);
+      if(prods?.code){ setDbStatus("error"); showToast("Erreur DB: "+prods.message,true); setLoading(false); return; }
+      if(!prods||prods.length===0){ for(const p of DEFAULT_PRODUCTS) await sb.insert("products",p); prods=await sb.get("products"); }
+      setProducts(Array.isArray(prods)?prods:[]);
+      const s = await sb.get("sales"); setSales(Array.isArray(s)?s:[]);
+      const t = await sb.get("tables_restaurant","&order=numero.asc"); setTables(Array.isArray(t)?t:[]);
+      const ing = await sb.get("ingredients","&order=name.asc"); setIngredients(Array.isArray(ing)?ing:[]);
+      const rec = await sb.get("recettes"); setRecettes(Array.isArray(rec)?rec:[]);
       setDbStatus("ok");
-    } catch(e){
-      console.error(e);
-      setDbStatus("error");
-      showToast("Erreur connexion Supabase",true);
-    }
+    } catch(e){ setDbStatus("error"); showToast("Erreur connexion",true); }
     setLoading(false);
   };
 
   const loadOrders = async () => {
     const o = await sb.get("orders","&statut=neq.servi&order=created_at.asc");
-    setOrders(Array.isArray(o) ? o : []);
-    for(const ord of (Array.isArray(o) ? o : [])){
+    setOrders(Array.isArray(o)?o:[]);
+    for(const ord of (Array.isArray(o)?o:[])){
       const items = await sb.getBy("order_items","order_id",ord.id);
       setOrderItems(prev=>({...prev,[ord.id]:items}));
     }
@@ -148,6 +136,7 @@ export default function AmlyPOS() {
     setSaleItems(prev=>({...prev,[saleId]:items}));
   };
 
+  // ── Panier ──
   const filtered = products.filter(p=>(cat==="Tout"||p.cat===cat)&&p.name.toLowerCase().includes(search.toLowerCase()));
   const cartSub   = cart.reduce((s,i)=>s+i.price*i.qty,0);
   const cartTotal = Math.max(0, cartSub - Number(discount||0));
@@ -164,6 +153,20 @@ export default function AmlyPOS() {
   };
   const updateQty  = (id,d) => setCart(prev=>prev.map(i=>i.id===id?{...i,qty:Math.max(1,i.qty+d)}:i));
   const removeItem = id    => setCart(prev=>prev.filter(i=>i.id!==id));
+
+  // ── Déduire ingrédients ──
+  const deduireIngredients = async (cartItems) => {
+    for(const item of cartItems){
+      const recettesProduit = recettes.filter(r=>r.product_id===item.id);
+      for(const r of recettesProduit){
+        const ing = ingredients.find(i=>i.id===r.ingredient_id);
+        if(ing){
+          const newStock = Math.max(0, ing.stock - (r.quantite * item.qty));
+          await sb.update("ingredients", ing.id, {stock: newStock});
+        }
+      }
+    }
+  };
 
   const sendToKitchen = async () => {
     if(!cart.length) return;
@@ -198,6 +201,7 @@ export default function AmlyPOS() {
       if(sale){
         for(const i of cart) await sb.insert("sale_items",{sale_id:sale.id,name:i.name,qty:i.qty,price:i.price,cost:i.cost});
         for(const i of cart){const p=products.find(x=>x.id===i.id);if(p) await sb.update("products",p.id,{stock:Math.max(0,p.stock-i.qty)});}
+        await deduireIngredients(cart);
         if(selTable) await sb.update("tables_restaurant",selTable.id,{statut:"libre"});
       }
       await loadAll();
@@ -221,8 +225,7 @@ export default function AmlyPOS() {
   const selectTable = async (t) => {
     setSelTable(t);
     if(t.statut==="libre") await sb.update("tables_restaurant",t.id,{statut:"occupée"});
-    await loadAll();
-    setPage("caisse");
+    await loadAll(); setPage("caisse");
     showToast(`Table ${t.label} sélectionnée`);
   };
 
@@ -235,15 +238,46 @@ export default function AmlyPOS() {
     setLoading(false);
   };
 
+  const addIngredient = async () => {
+    if(!newI.name||!newI.stock){showToast("Champs manquants",true);return;}
+    setLoading(true);
+    await sb.insert("ingredients",{...newI,stock:Number(newI.stock),stock_min:Number(newI.stock_min||0),cost_unit:Number(newI.cost_unit||0)});
+    setNewI({name:"",unit:"kg",stock:"",stock_min:"",cost_unit:""});
+    await loadAll(); setModal(null); showToast("Ingrédient ajouté ✓");
+    setLoading(false);
+  };
+
+  const addRecette = async () => {
+    if(!selProduct||!newR.ingredient_id||!newR.quantite){showToast("Champs manquants",true);return;}
+    setLoading(true);
+    await sb.insert("recettes",{product_id:selProduct.id,ingredient_id:newR.ingredient_id,quantite:Number(newR.quantite)});
+    setNewR({ingredient_id:"",quantite:""});
+    await loadAll(); showToast("Ingrédient ajouté à la recette ✓");
+    setLoading(false);
+  };
+
+  const deleteRecette = async (id) => {
+    await sb.del("recettes", id);
+    await loadAll(); showToast("Supprimé ✓");
+  };
+
+  const updateIngredientStock = async (id, newStock) => {
+    await sb.update("ingredients", id, {stock: Number(newStock)});
+    await loadAll(); showToast("Stock mis à jour ✓");
+  };
+
   const totalRev  = sales.reduce((s,r)=>s+(r.total||0),0);
   const todayRev  = sales.filter(s=>s.created_at&&new Date(s.created_at).toDateString()===new Date().toDateString()).reduce((s,r)=>s+(r.total||0),0);
   const glovoRev  = sales.filter(s=>s.method?.includes("Glovo")).reduce((s,r)=>s+(r.total||0),0);
+  const ingCritiques = ingredients.filter(i=>i.stock<=i.stock_min);
 
   const ADMIN_NAV = [
     {k:"caisse",i:"🏪",l:"Caisse"},
     {k:"tables",i:"🪑",l:"Tables"},
     {k:"cuisine",i:"👨‍🍳",l:"Cuisine"},
     {k:"produits",i:"📋",l:"Produits"},
+    {k:"ingredients",i:"🧂",l:"Ingrédients"},
+    {k:"recettes",i:"📖",l:"Recettes"},
     {k:"ventes",i:"💳",l:"Ventes"},
     {k:"stock",i:"📦",l:"Stock"},
     {k:"rapports",i:"📊",l:"Rapports"},
@@ -255,6 +289,7 @@ export default function AmlyPOS() {
     {k:"cuisine",i:"👨‍🍳",l:"Cuisine"},
     {k:"ventes",i:"💳",l:"Ventes"},
     {k:"stock",i:"📦",l:"Stock"},
+    {k:"ingredients",i:"🧂",l:"Ingrédients"},
   ];
   const nav = role==="admin" ? ADMIN_NAV : EMP_NAV;
 
@@ -266,18 +301,12 @@ export default function AmlyPOS() {
     </button>
   );
 
-  // Bannière erreur DB
-  const DbBanner = () => dbStatus === "error" ? (
-    <div style={{background:"#7f1d1d",color:"#fca5a5",padding:"8px 16px",fontSize:12,fontWeight:600,textAlign:"center",borderBottom:"1px solid #991b1b"}}>
-      ⚠️ Impossible de se connecter à Supabase — Vérifie que les tables existent (products, sales, orders, order_items, sale_items, tables_restaurant) et que le RLS est désactivé.
-      <button onClick={loadAll} style={{marginLeft:12,background:"#991b1b",color:"#fca5a5",border:"none",borderRadius:5,padding:"2px 10px",cursor:"pointer",fontSize:11}}>Réessayer</button>
-    </div>
-  ) : null;
+  const filteredIng = ingredients.filter(i=>i.name.toLowerCase().includes(ingSearch.toLowerCase()));
 
   return (
     <div style={{fontFamily:"'DM Sans',system-ui,sans-serif",background:C.dark,color:C.txt,minHeight:"100vh",display:"flex",flexDirection:"column",fontSize:14}}>
 
-      {/* ── TOPBAR ── */}
+      {/* TOPBAR */}
       <div style={{display:"flex",alignItems:"center",padding:"0 14px",height:50,background:C.dark2,borderBottom:`1px solid ${C.border}`,flexShrink:0,gap:10}}>
         <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
           <HitLogo size={34}/>
@@ -286,13 +315,15 @@ export default function AmlyPOS() {
             <div style={{fontSize:9,color:C.muted,fontWeight:600,letterSpacing:"0.1em"}}>POINT OF SALE</div>
           </div>
           {loading&&<span style={{fontSize:10,color:C.gold,marginLeft:4}}>⏳</span>}
-          {/* Indicateur connexion DB */}
           <div style={{display:"flex",alignItems:"center",gap:4,marginLeft:8}}>
-            <span style={{width:6,height:6,borderRadius:"50%",background:dbStatus==="ok"?C.green:dbStatus==="error"?C.red:"#888"}}></span>
-            <span style={{fontSize:9,color:dbStatus==="ok"?C.green:dbStatus==="error"?C.red:C.muted}}>
-              {dbStatus==="ok"?"DB connectée":dbStatus==="error"?"DB erreur":"..."}
-            </span>
+            <span style={{width:6,height:6,borderRadius:"50%",background:dbStatus==="ok"?C.green:C.red}}></span>
+            <span style={{fontSize:9,color:dbStatus==="ok"?C.green:C.red}}>{dbStatus==="ok"?"DB connectée":"DB erreur"}</span>
           </div>
+          {ingCritiques.length>0&&(
+            <div style={{background:"rgba(239,68,68,0.15)",border:`1px solid ${C.red}`,borderRadius:6,padding:"2px 8px",fontSize:10,color:C.red,fontWeight:700}}>
+              ⚠️ {ingCritiques.length} ingrédient{ingCritiques.length>1?"s":""} en rupture
+            </div>
+          )}
         </div>
 
         <div style={{display:"flex",gap:2,flex:1,justifyContent:"center",flexWrap:"wrap"}}>
@@ -306,11 +337,7 @@ export default function AmlyPOS() {
         </div>
 
         <div style={{display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
-          {selTable&&(
-            <div style={{background:"rgba(201,168,76,0.15)",border:`1px solid ${C.gold}`,borderRadius:8,padding:"3px 10px",fontSize:11,color:C.gold,fontWeight:700}}>
-              🪑 {selTable.label}
-            </div>
-          )}
+          {selTable&&<div style={{background:"rgba(201,168,76,0.15)",border:`1px solid ${C.gold}`,borderRadius:8,padding:"3px 10px",fontSize:11,color:C.gold,fontWeight:700}}>🪑 {selTable.label}</div>}
           <div style={{background:orderType==="sur_place"?"rgba(34,197,94,0.15)":"rgba(59,130,246,0.15)",
             border:`1px solid ${orderType==="sur_place"?C.green:C.blue}`,borderRadius:8,padding:"3px 10px",fontSize:11,
             color:orderType==="sur_place"?C.green:C.blue,fontWeight:700,cursor:"pointer"}}
@@ -333,13 +360,11 @@ export default function AmlyPOS() {
         </div>
       </div>
 
-      <DbBanner/>
-
       {toast&&<div style={{position:"fixed",top:58,right:18,zIndex:9999,background:toast.err?"#7f1d1d":"#14532d",color:toast.err?"#fca5a5":"#86efac",padding:"8px 16px",borderRadius:10,fontWeight:600,fontSize:13,boxShadow:"0 4px 20px rgba(0,0,0,0.5)"}}>{toast.msg}</div>}
 
       <div style={{display:"flex",flex:1,overflow:"hidden"}}>
         {/* SIDEBAR */}
-        <div style={{width:170,background:C.dark2,borderRight:`1px solid ${C.border}`,display:"flex",flexDirection:"column",padding:"10px 0",flexShrink:0}}>
+        <div style={{width:170,background:C.dark2,borderRight:`1px solid ${C.border}`,display:"flex",flexDirection:"column",padding:"10px 0",flexShrink:0,overflowY:"auto"}}>
           {nav.map(n=>(
             <div key={n.k} onClick={()=>setPage(n.k)}
               style={{display:"flex",alignItems:"center",gap:8,padding:"9px 14px",cursor:"pointer",fontSize:12,
@@ -350,6 +375,11 @@ export default function AmlyPOS() {
               {n.k==="cuisine"&&orders.filter(o=>o.statut==="en_attente").length>0&&(
                 <span style={{marginLeft:"auto",background:C.red,color:"#fff",borderRadius:10,fontSize:10,fontWeight:700,padding:"1px 6px"}}>
                   {orders.filter(o=>o.statut==="en_attente").length}
+                </span>
+              )}
+              {n.k==="ingredients"&&ingCritiques.length>0&&(
+                <span style={{marginLeft:"auto",background:C.red,color:"#fff",borderRadius:10,fontSize:10,fontWeight:700,padding:"1px 6px"}}>
+                  {ingCritiques.length}
                 </span>
               )}
             </div>
@@ -390,7 +420,6 @@ export default function AmlyPOS() {
                     </button>
                   )}
                 </div>
-
                 <div style={{display:"flex",gap:8,marginBottom:10,alignItems:"center"}}>
                   <input style={{...S.input,flex:1}} placeholder="🔍 Rechercher…" value={search} onChange={e=>setSearch(e.target.value)}/>
                   {role==="admin"&&<button style={{...S.btnG,width:"auto",padding:"8px 12px",whiteSpace:"nowrap",fontSize:12}} onClick={()=>setModal("addProd")}>+ Nouveau</button>}
@@ -404,17 +433,7 @@ export default function AmlyPOS() {
                     </button>
                   ))}
                 </div>
-
-                {dbStatus==="error" && (
-                  <div style={{textAlign:"center",padding:40,color:C.muted}}>
-                    <div style={{fontSize:36,marginBottom:10}}>🔌</div>
-                    <div style={{fontSize:13,fontWeight:600,color:C.red,marginBottom:8}}>Base de données non connectée</div>
-                    <div style={{fontSize:11,marginBottom:16}}>Crée les tables dans Supabase puis clique Réessayer</div>
-                    <button onClick={loadAll} style={{...S.btnG,width:"auto",padding:"8px 20px"}}>🔄 Réessayer</button>
-                  </div>
-                )}
-
-                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))",gap:8}}>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:8}}>
                   {filtered.map(p=>(
                     <div key={p.id} onClick={()=>addToCart(p)}
                       style={{background:C.dark3,border:`1px solid ${C.border}`,borderRadius:10,padding:10,
@@ -422,7 +441,10 @@ export default function AmlyPOS() {
                         opacity:p.stock===0?0.4:1,display:"flex",flexDirection:"column",gap:3}}
                       onMouseEnter={e=>{if(p.stock>0){e.currentTarget.style.borderColor=C.gold;e.currentTarget.style.transform="translateY(-2px)";}}}
                       onMouseLeave={e=>{e.currentTarget.style.borderColor=C.border;e.currentTarget.style.transform="none";}}>
-                      <div style={{fontSize:26}}>{p.img}</div>
+                      {p.img_url
+                        ? <img src={p.img_url} alt={p.name} style={{width:"100%",height:70,objectFit:"cover",borderRadius:6}}/>
+                        : <div style={{fontSize:30}}>{p.img}</div>
+                      }
                       <div style={{fontSize:11,fontWeight:600,lineHeight:1.2}}>{p.name}</div>
                       <div style={{fontSize:12,fontWeight:800,color:C.gold}}>{fmt(p.price)} F</div>
                       <div style={{fontSize:10,color:p.stock<5?C.red:C.muted}}>Stock: {p.stock}</div>
@@ -439,7 +461,6 @@ export default function AmlyPOS() {
                     {orderType==="sur_place"?`🍽 Sur place${selTable?` · ${selTable.label}`:""}` :"🥡 Emporter"}
                   </span>
                 </div>
-
                 {cart.length===0?(
                   <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",color:C.muted,gap:6}}>
                     <span style={{fontSize:30}}>🛒</span><span style={{fontSize:12}}>Panier vide</span>
@@ -472,7 +493,6 @@ export default function AmlyPOS() {
                     </table>
                   </div>
                 )}
-
                 <div style={{padding:10,borderTop:`1px solid ${C.border}`,display:"flex",flexDirection:"column",gap:7}}>
                   <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:C.muted}}>
                     <span>Sous-total</span><span>{fmt(cartSub)} F</span>
@@ -484,20 +504,10 @@ export default function AmlyPOS() {
                   <div style={{display:"flex",justifyContent:"space-between",fontWeight:800,fontSize:14}}>
                     <span>Total</span><span style={{color:C.green}}>{fmt(cartTotal)} F</span>
                   </div>
-
                   <div style={{display:"flex",gap:5}}>
-                    <button onClick={()=>setPayMode("simple")}
-                      style={{flex:1,padding:"4px",border:`1px solid ${payMode==="simple"?C.gold:C.border}`,borderRadius:6,cursor:"pointer",fontSize:10,fontWeight:600,
-                        background:payMode==="simple"?C.gold:"transparent",color:payMode==="simple"?"#000":C.muted}}>
-                      Simple
-                    </button>
-                    <button onClick={()=>setPayMode("mixte")}
-                      style={{flex:1,padding:"4px",border:`1px solid ${payMode==="mixte"?C.blue:C.border}`,borderRadius:6,cursor:"pointer",fontSize:10,fontWeight:600,
-                        background:payMode==="mixte"?C.blue:"transparent",color:payMode==="mixte"?"#fff":C.muted}}>
-                      💰 Mixte
-                    </button>
+                    <button onClick={()=>setPayMode("simple")} style={{flex:1,padding:"4px",border:`1px solid ${payMode==="simple"?C.gold:C.border}`,borderRadius:6,cursor:"pointer",fontSize:10,fontWeight:600,background:payMode==="simple"?C.gold:"transparent",color:payMode==="simple"?"#000":C.muted}}>Simple</button>
+                    <button onClick={()=>setPayMode("mixte")} style={{flex:1,padding:"4px",border:`1px solid ${payMode==="mixte"?C.blue:C.border}`,borderRadius:6,cursor:"pointer",fontSize:10,fontWeight:600,background:payMode==="mixte"?C.blue:"transparent",color:payMode==="mixte"?"#fff":C.muted}}>💰 Mixte</button>
                   </div>
-
                   {payMode==="simple"&&(
                     <>
                       <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
@@ -509,16 +519,6 @@ export default function AmlyPOS() {
                           {amount1&&change>0&&(
                             <div style={{background:"rgba(34,197,94,0.08)",border:"1px solid rgba(34,197,94,0.2)",borderRadius:7,padding:"6px 9px",fontSize:11}}>
                               <div>Monnaie : <strong style={{color:C.green}}>{fmt(change)} F</strong></div>
-                              <div style={{display:"flex",gap:3,marginTop:4}}>
-                                {["Espèces","Wave","Orange Money"].map(r=>(
-                                  <button key={r} onClick={()=>setRendMode(r)}
-                                    style={{flex:1,padding:"3px 2px",border:`1px solid ${rendMode===r?C.gold:C.border}`,borderRadius:4,cursor:"pointer",fontSize:9,fontWeight:600,
-                                      background:rendMode===r?C.gold:"transparent",color:rendMode===r?"#000":C.muted}}>
-                                    {r==="Orange Money"?"OM":r}
-                                  </button>
-                                ))}
-                              </div>
-                              {rendMode!=="Espèces"&&<div style={{fontSize:10,color:"#93c5fd",marginTop:3}}>→ Envoyer {fmt(change)} F via {rendMode}</div>}
                             </div>
                           )}
                         </>
@@ -526,35 +526,19 @@ export default function AmlyPOS() {
                       {method1==="Glovo"&&<div style={{background:"rgba(249,115,22,0.1)",border:"1px solid rgba(249,115,22,0.3)",borderRadius:6,padding:"5px 8px",fontSize:10,color:"#fdba74"}}>🛵 Encaissement Glovo à la semaine</div>}
                     </>
                   )}
-
                   {payMode==="mixte"&&(
                     <div style={{background:C.dark3,borderRadius:7,padding:8,display:"flex",flexDirection:"column",gap:6}}>
                       <div style={{fontSize:10,color:C.muted,fontWeight:600}}>Paiement 1</div>
-                      <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
-                        {METHODS.map(m=><MBtn key={m} m={m} active={method1===m} onClick={()=>setMethod1(m)}/>)}
-                      </div>
+                      <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>{METHODS.map(m=><MBtn key={m} m={m} active={method1===m} onClick={()=>setMethod1(m)}/>)}</div>
                       <input style={{...S.input,fontSize:11,padding:"5px 9px"}} type="number" placeholder={`Montant ${method1} (F)`} value={amount1} onChange={e=>setAmount1(e.target.value)}/>
                       <div style={{fontSize:10,color:C.muted,fontWeight:600}}>Paiement 2</div>
-                      <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
-                        {METHODS.filter(m=>m!==method1).map(m=><MBtn key={m} m={m} active={method2===m} onClick={()=>setMethod2(m)}/>)}
-                      </div>
+                      <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>{METHODS.filter(m=>m!==method1).map(m=><MBtn key={m} m={m} active={method2===m} onClick={()=>setMethod2(m)}/>)}</div>
                       <input style={{...S.input,fontSize:11,padding:"5px 9px"}} type="number" placeholder={`Montant ${method2} (F)`} value={amount2} onChange={e=>setAmount2(e.target.value)}/>
-                      {(amount1||amount2)&&(
-                        <div style={{borderTop:`1px solid ${C.border}`,paddingTop:5,fontSize:11}}>
-                          {totalPaid>=cartTotal?<div style={{color:C.green,fontWeight:700}}>✓ Rendu : {fmt(change)} F</div>:<div style={{color:C.red}}>⚠ Manque : {fmt(cartTotal-totalPaid)} F</div>}
-                        </div>
-                      )}
+                      {(amount1||amount2)&&<div style={{borderTop:`1px solid ${C.border}`,paddingTop:5,fontSize:11}}>{totalPaid>=cartTotal?<div style={{color:C.green,fontWeight:700}}>✓ Rendu : {fmt(change)} F</div>:<div style={{color:C.red}}>⚠ Manque : {fmt(cartTotal-totalPaid)} F</div>}</div>}
                     </div>
                   )}
-
-                  <button style={{...S.btnB,...(!cart.length||loading?{opacity:.4,cursor:"not-allowed"}:{})}}
-                    onClick={()=>cart.length&&!loading&&sendToKitchen()}>
-                    👨‍🍳 Envoyer en cuisine
-                  </button>
-                  <button style={{...S.btnG,...(!cart.length||loading?{opacity:.4,cursor:"not-allowed"}:{})}}
-                    onClick={()=>cart.length&&!loading&&setModal("confirm")}>
-                    ✓ Encaisser directement
-                  </button>
+                  <button style={{...S.btnB,...(!cart.length||loading?{opacity:.4,cursor:"not-allowed"}:{})}} onClick={()=>cart.length&&!loading&&sendToKitchen()}>👨‍🍳 Envoyer en cuisine</button>
+                  <button style={{...S.btnG,...(!cart.length||loading?{opacity:.4,cursor:"not-allowed"}:{})}} onClick={()=>cart.length&&!loading&&setModal("confirm")}>✓ Encaisser directement</button>
                   <button style={S.btnO} onClick={()=>setCart([])}>Annuler</button>
                 </div>
               </div>
@@ -566,27 +550,11 @@ export default function AmlyPOS() {
             <div style={{flex:1,overflow:"auto",padding:20}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
                 <span style={{fontWeight:700,fontSize:16}}>🪑 Plan de salle</span>
-                <div style={{display:"flex",gap:12,fontSize:12}}>
-                  {[{c:C.green,l:"Libre"},{c:C.gold,l:"Occupée"},{c:C.red,l:"À nettoyer"}].map(s=>(
-                    <div key={s.l} style={{display:"flex",alignItems:"center",gap:5}}>
-                      <span style={{width:10,height:10,borderRadius:"50%",background:s.c}}></span><span style={{color:C.muted}}>{s.l}</span>
-                    </div>
-                  ))}
-                </div>
               </div>
-              {tables.length===0&&(
-                <div style={{textAlign:"center",padding:40,color:C.muted}}>
-                  <div style={{fontSize:36,marginBottom:10}}>🪑</div>
-                  <div style={{fontSize:13,marginBottom:6}}>Aucune table trouvée</div>
-                  <div style={{fontSize:11}}>Lance le SQL d'initialisation dans Supabase</div>
-                </div>
-              )}
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:12}}>
                 {tables.map(t=>(
-                  <div key={t.id}
-                    style={{...S.card,cursor:"pointer",textAlign:"center",transition:"all .15s",
-                      borderColor:t.statut==="occupée"?C.gold:t.statut==="libre"?"rgba(34,197,94,0.3)":C.border,
-                      background:t.statut==="occupée"?"rgba(201,168,76,0.06)":t.statut==="libre"?"rgba(34,197,94,0.04)":C.dark2}}
+                  <div key={t.id} style={{...S.card,cursor:"pointer",textAlign:"center",transition:"all .15s",
+                    borderColor:t.statut==="occupée"?C.gold:t.statut==="libre"?"rgba(34,197,94,0.3)":C.border}}
                     onClick={()=>selectTable(t)}>
                     <div style={{fontSize:28,marginBottom:6}}>🪑</div>
                     <div style={{fontWeight:800,fontSize:16}}>{t.label}</div>
@@ -598,22 +566,18 @@ export default function AmlyPOS() {
                         {t.statut}
                       </span>
                     </div>
-                    {selTable?.id===t.id&&<div style={{marginTop:6,fontSize:11,color:C.gold,fontWeight:700}}>✓ Sélectionnée</div>}
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* ══ CUISINE / KDS ══ */}
+          {/* ══ CUISINE ══ */}
           {page==="cuisine"&&(
             <div style={{flex:1,overflow:"auto",padding:16,background:"#0a0a0a"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
                 <span style={{fontWeight:800,fontSize:18}}>👨‍🍳 Écran Cuisine</span>
-                <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                  <span style={{fontSize:11,color:C.muted}}>Actualisation auto</span>
-                  <button onClick={loadOrders} style={{background:C.dark2,border:`1px solid ${C.border}`,borderRadius:6,padding:"5px 12px",cursor:"pointer",color:C.txt,fontSize:11}}>🔄 Rafraîchir</button>
-                </div>
+                <button onClick={loadOrders} style={{background:C.dark2,border:`1px solid ${C.border}`,borderRadius:6,padding:"5px 12px",cursor:"pointer",color:C.txt,fontSize:11}}>🔄 Rafraîchir</button>
               </div>
               {orders.length===0?(
                 <div style={{textAlign:"center",padding:60,color:C.muted}}>
@@ -623,64 +587,167 @@ export default function AmlyPOS() {
               ):(
                 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:14}}>
                   {orders.map(order=>(
-                    <div key={order.id} style={{
-                      background:order.statut==="en_attente"?"#1a0f00":order.statut==="en_preparation"?"#001a0f":"#0a1a0a",
-                      border:`2px solid ${order.statut==="en_attente"?C.orange:order.statut==="en_preparation"?C.green:"#2d4a2d"}`,
-                      borderRadius:12,padding:14,display:"flex",flexDirection:"column",gap:10}}>
-                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div key={order.id} style={{background:order.statut==="en_attente"?"#1a0f00":"#001a0f",border:`2px solid ${order.statut==="en_attente"?C.orange:C.green}`,borderRadius:12,padding:14,display:"flex",flexDirection:"column",gap:10}}>
+                      <div style={{display:"flex",justifyContent:"space-between"}}>
                         <span style={{fontWeight:800,fontSize:14,color:C.gold}}>{order.reference}</span>
                         <span style={{fontSize:10,color:C.muted}}>{order.created_at?new Date(order.created_at).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}):""}</span>
                       </div>
-                      <div style={{display:"flex",gap:6}}>
-                        <span style={{display:"inline-block",padding:"2px 8px",borderRadius:8,fontSize:10,fontWeight:600,
-                          background:order.type==="sur_place"?"rgba(34,197,94,0.2)":"rgba(59,130,246,0.2)",
-                          color:order.type==="sur_place"?C.green:C.blue}}>
-                          {order.type==="sur_place"?"🍽 Sur place":"🥡 Emporter"}
-                        </span>
-                        <span style={{display:"inline-block",padding:"2px 8px",borderRadius:8,fontSize:10,fontWeight:600,
-                          background:order.statut==="en_attente"?"rgba(249,115,22,0.2)":"rgba(34,197,94,0.2)",
-                          color:order.statut==="en_attente"?C.orange:C.green}}>
-                          {order.statut==="en_attente"?"⏳ En attente":"🔥 En préparation"}
-                        </span>
-                      </div>
                       <div style={{display:"flex",flexDirection:"column",gap:5}}>
                         {(orderItems[order.id]||[]).map(item=>(
-                          <div key={item.id} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 8px",borderRadius:6,
-                            background:item.statut==="pret"?"rgba(34,197,94,0.1)":"rgba(255,255,255,0.04)"}}>
+                          <div key={item.id} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 8px",borderRadius:6,background:item.statut==="pret"?"rgba(34,197,94,0.1)":"rgba(255,255,255,0.04)"}}>
                             <span style={{fontSize:14,fontWeight:800,color:C.gold,minWidth:20}}>×{item.qty}</span>
                             <span style={{flex:1,fontSize:12,fontWeight:600}}>{item.product_name}</span>
                             <button onClick={()=>updateItemStatut(item.id,order.id,item.statut==="pret"?"en_attente":"pret")}
-                              style={{padding:"3px 8px",borderRadius:5,border:"none",cursor:"pointer",fontSize:10,fontWeight:700,
-                                background:item.statut==="pret"?C.green:C.dark3,color:item.statut==="pret"?"#000":C.muted}}>
+                              style={{padding:"3px 8px",borderRadius:5,border:"none",cursor:"pointer",fontSize:10,fontWeight:700,background:item.statut==="pret"?C.green:C.dark3,color:item.statut==="pret"?"#000":C.muted}}>
                               {item.statut==="pret"?"✓ Prêt":"Marquer prêt"}
                             </button>
                           </div>
                         ))}
                       </div>
-                      <div style={{display:"flex",gap:6,marginTop:4}}>
-                        {order.statut==="en_attente"&&(
-                          <button onClick={()=>updateOrderStatut(order.id,"en_preparation")}
-                            style={{flex:1,padding:"7px",borderRadius:7,border:"none",cursor:"pointer",background:C.orange,color:"#000",fontWeight:700,fontSize:11}}>
-                            🔥 Démarrer
-                          </button>
-                        )}
-                        {order.statut==="en_preparation"&&(
-                          <button onClick={()=>updateOrderStatut(order.id,"pret")}
-                            style={{flex:1,padding:"7px",borderRadius:7,border:"none",cursor:"pointer",background:C.green,color:"#000",fontWeight:700,fontSize:11}}>
-                            ✅ Prêt à servir
-                          </button>
-                        )}
-                        {order.statut==="pret"&&(
-                          <button onClick={()=>updateOrderStatut(order.id,"servi")}
-                            style={{flex:1,padding:"7px",borderRadius:7,border:"none",cursor:"pointer",background:C.dark3,color:C.muted,fontWeight:700,fontSize:11}}>
-                            Marquer servi
-                          </button>
-                        )}
+                      <div style={{display:"flex",gap:6}}>
+                        {order.statut==="en_attente"&&<button onClick={()=>updateOrderStatut(order.id,"en_preparation")} style={{flex:1,padding:"7px",borderRadius:7,border:"none",cursor:"pointer",background:C.orange,color:"#000",fontWeight:700,fontSize:11}}>🔥 Démarrer</button>}
+                        {order.statut==="en_preparation"&&<button onClick={()=>updateOrderStatut(order.id,"pret")} style={{flex:1,padding:"7px",borderRadius:7,border:"none",cursor:"pointer",background:C.green,color:"#000",fontWeight:700,fontSize:11}}>✅ Prêt à servir</button>}
+                        {order.statut==="pret"&&<button onClick={()=>updateOrderStatut(order.id,"servi")} style={{flex:1,padding:"7px",borderRadius:7,border:"none",cursor:"pointer",background:C.dark3,color:C.muted,fontWeight:700,fontSize:11}}>Marquer servi</button>}
                       </div>
                     </div>
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* ══ INGRÉDIENTS ══ */}
+          {page==="ingredients"&&(
+            <div style={{flex:1,overflow:"auto",padding:16}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+                <span style={{fontWeight:700,fontSize:15}}>🧂 Stock Ingrédients</span>
+                <button style={{...S.btnG,width:"auto",padding:"7px 14px"}} onClick={()=>setModal("addIng")}>+ Ajouter</button>
+              </div>
+              {ingCritiques.length>0&&(
+                <div style={{background:"rgba(239,68,68,0.1)",border:`1px solid ${C.red}`,borderRadius:10,padding:12,marginBottom:14}}>
+                  <div style={{fontWeight:700,color:C.red,marginBottom:8}}>⚠️ Ingrédients en rupture ou stock critique</div>
+                  <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                    {ingCritiques.map(i=>(
+                      <span key={i.id} style={{background:"rgba(239,68,68,0.15)",color:C.red,borderRadius:6,padding:"3px 10px",fontSize:11,fontWeight:600}}>
+                        {i.name} — {i.stock} {i.unit}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <input style={{...S.input,marginBottom:12}} placeholder="🔍 Rechercher un ingrédient…" value={ingSearch} onChange={e=>setIngSearch(e.target.value)}/>
+              <div style={S.card}>
+                <table style={{width:"100%",borderCollapse:"collapse"}}>
+                  <thead><tr>{["Ingrédient","Unité","Stock actuel","Stock min","Coût/unité","Statut","Modifier stock"].map(h=><th key={h} style={S.th}>{h}</th>)}</tr></thead>
+                  <tbody>
+                    {filteredIng.map(i=>{
+                      const statut = i.stock<=0?"Épuisé":i.stock<=i.stock_min?"Critique":"OK";
+                      const statutColor = statut==="Épuisé"?C.red:statut==="Critique"?"#fbbf24":C.green;
+                      return(
+                        <tr key={i.id}>
+                          <td style={{...S.td,fontWeight:600}}>{i.name}</td>
+                          <td style={S.td}>{i.unit}</td>
+                          <td style={{...S.td,fontWeight:700,color:i.stock<=i.stock_min?C.red:C.txt}}>{i.stock}</td>
+                          <td style={S.td}>{i.stock_min}</td>
+                          <td style={S.td}>{fmt(i.cost_unit)} F</td>
+                          <td style={S.td}>
+                            <span style={{display:"inline-block",padding:"2px 8px",borderRadius:8,fontSize:10,fontWeight:600,background:`${statutColor}22`,color:statutColor}}>
+                              {statut}
+                            </span>
+                          </td>
+                          <td style={S.td}>
+                            <div style={{display:"flex",gap:4,alignItems:"center"}}>
+                              <input
+                                type="number"
+                                defaultValue={i.stock}
+                                onBlur={e=>{ if(Number(e.target.value)!==i.stock) updateIngredientStock(i.id, e.target.value); }}
+                                style={{...S.input,width:70,padding:"3px 7px",fontSize:11,textAlign:"center"}}
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* ══ RECETTES ══ */}
+          {page==="recettes"&&(
+            <div style={{flex:1,overflow:"auto",padding:16}}>
+              <div style={{fontWeight:700,fontSize:15,marginBottom:14}}>📖 Gestion des Recettes</div>
+              <div style={{display:"flex",gap:14,flexWrap:"wrap"}}>
+                {/* Liste des plats */}
+                <div style={{...S.card,width:220,flexShrink:0}}>
+                  <div style={{fontWeight:700,marginBottom:10,fontSize:13}}>Sélectionner un plat</div>
+                  <div style={{display:"flex",flexDirection:"column",gap:4}}>
+                    {products.map(p=>(
+                      <div key={p.id} onClick={()=>setSelProduct(p)}
+                        style={{padding:"8px 10px",borderRadius:7,cursor:"pointer",fontSize:12,fontWeight:600,
+                          background:selProduct?.id===p.id?"rgba(201,168,76,0.15)":"transparent",
+                          border:`1px solid ${selProduct?.id===p.id?C.gold:C.border}`,
+                          color:selProduct?.id===p.id?C.gold:C.txt}}>
+                        {p.img} {p.name}
+                        <div style={{fontSize:10,color:C.muted,fontWeight:400}}>{recettes.filter(r=>r.product_id===p.id).length} ingrédient(s)</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Recette du plat sélectionné */}
+                {selProduct&&(
+                  <div style={{flex:1,minWidth:300}}>
+                    <div style={{...S.card,marginBottom:12}}>
+                      <div style={{fontWeight:700,fontSize:14,marginBottom:12,color:C.gold}}>
+                        {selProduct.img} {selProduct.name} — Ingrédients
+                      </div>
+                      {recettes.filter(r=>r.product_id===selProduct.id).length===0?(
+                        <div style={{color:C.muted,fontSize:12,textAlign:"center",padding:20}}>Aucun ingrédient défini pour ce plat</div>
+                      ):(
+                        <table style={{width:"100%",borderCollapse:"collapse"}}>
+                          <thead><tr>{["Ingrédient","Quantité","Unité",""].map(h=><th key={h} style={S.th}>{h}</th>)}</tr></thead>
+                          <tbody>
+                            {recettes.filter(r=>r.product_id===selProduct.id).map(r=>{
+                              const ing = ingredients.find(i=>i.id===r.ingredient_id);
+                              return(
+                                <tr key={r.id}>
+                                  <td style={{...S.td,fontWeight:600}}>{ing?.name||"?"}</td>
+                                  <td style={{...S.td,color:C.gold,fontWeight:700}}>{r.quantite}</td>
+                                  <td style={S.td}>{ing?.unit||""}</td>
+                                  <td style={S.td}><button onClick={()=>deleteRecette(r.id)} style={S.btnR}>✕</button></td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      )}
+                    </div>
+
+                    {/* Ajouter ingrédient à la recette */}
+                    <div style={S.card}>
+                      <div style={{fontWeight:700,marginBottom:10,fontSize:13}}>+ Ajouter un ingrédient</div>
+                      <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                        <div style={{flex:2,minWidth:150}}>
+                          <div style={{fontSize:10,color:C.muted,marginBottom:3}}>Ingrédient</div>
+                          <select style={S.input} value={newR.ingredient_id} onChange={e=>setNewR(p=>({...p,ingredient_id:e.target.value}))}>
+                            <option value="">-- Choisir --</option>
+                            {ingredients.map(i=><option key={i.id} value={i.id}>{i.name} ({i.unit})</option>)}
+                          </select>
+                        </div>
+                        <div style={{flex:1,minWidth:80}}>
+                          <div style={{fontSize:10,color:C.muted,marginBottom:3}}>Quantité</div>
+                          <input style={S.input} type="number" placeholder="ex: 0.2" value={newR.quantite} onChange={e=>setNewR(p=>({...p,quantite:e.target.value}))}/>
+                        </div>
+                        <div style={{display:"flex",alignItems:"flex-end"}}>
+                          <button style={{...S.btnG,width:"auto",padding:"8px 16px"}} onClick={addRecette}>Ajouter</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -726,7 +793,7 @@ export default function AmlyPOS() {
                         <td style={{...S.td,color:C.gold,fontWeight:700}}>{sale.reference}</td>
                         <td style={S.td}>{sale.created_at?new Date(sale.created_at).toLocaleString("fr-FR"):""}</td>
                         <td style={S.td}>{sale.vendor}</td>
-                        <td style={S.td}><span style={{display:"inline-block",padding:"2px 7px",borderRadius:8,fontSize:10,fontWeight:600,background:"rgba(59,130,246,0.15)",color:"#93c5fd",maxWidth:140,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{sale.method}</span></td>
+                        <td style={S.td}><span style={{display:"inline-block",padding:"2px 7px",borderRadius:8,fontSize:10,fontWeight:600,background:"rgba(59,130,246,0.15)",color:"#93c5fd"}}>{sale.method}</span></td>
                         <td style={{...S.td,fontWeight:700,color:C.green}}>{fmt(sale.total)} F</td>
                         <td style={S.td}><button onClick={async()=>{await loadSaleItems(sale.id);setSelSale(sale);setModal("receipt");}} style={{background:"#14532d",color:"#86efac",border:"none",borderRadius:5,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:600}}>Détail</button></td>
                       </tr>
@@ -740,7 +807,7 @@ export default function AmlyPOS() {
           {/* ══ STOCK ══ */}
           {page==="stock"&&(
             <div style={{flex:1,overflow:"auto",padding:16}}>
-              <div style={{fontWeight:700,fontSize:15,marginBottom:14}}>Gestion du Stock</div>
+              <div style={{fontWeight:700,fontSize:15,marginBottom:14}}>📦 Stock Produits finis</div>
               <div style={S.card}>
                 <table style={{width:"100%",borderCollapse:"collapse"}}>
                   <thead><tr>{["","Produit","Cat.","Stock","Statut"].map(h=><th key={h} style={S.th}>{h}</th>)}</tr></thead>
@@ -771,7 +838,7 @@ export default function AmlyPOS() {
                   {l:"Ventes totales",v:fmt(totalRev)+" F",i:"🏦",c:C.gold},
                   {l:"Aujourd'hui",   v:fmt(todayRev)+" F",i:"📅",c:C.green},
                   {l:"Transactions",  v:sales.length,       i:"💳",c:C.txt},
-                  {l:"Glovo (encours)",v:fmt(glovoRev)+" F",i:"🛵",c:C.orange},
+                  {l:"Glovo",         v:fmt(glovoRev)+" F", i:"🛵",c:C.orange},
                 ].map(c=>(
                   <div key={c.l} style={{...S.card,flex:1,minWidth:120}}>
                     <div style={{fontSize:18,marginBottom:5}}>{c.i}</div>
@@ -808,18 +875,10 @@ export default function AmlyPOS() {
               <div style={{...S.card,marginBottom:14}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
                   <div style={{fontWeight:700}}>🏪 Informations du commerce</div>
-                  <button onClick={()=>{ if(editShop) showToast("Informations sauvegardées ✓"); setEditShop(!editShop); }}
+                  <button onClick={()=>{ if(editShop) showToast("Sauvegardé ✓"); setEditShop(!editShop); }}
                     style={{background:editShop?C.gold:"transparent",color:editShop?"#000":C.gold,border:`1px solid ${C.gold}`,borderRadius:6,padding:"4px 12px",cursor:"pointer",fontSize:12,fontWeight:600}}>
                     {editShop?"✓ Enregistrer":"Modifier"}
                   </button>
-                </div>
-                <div style={{display:"flex",gap:14,alignItems:"center",marginBottom:12}}>
-                  <HitLogo size={52}/>
-                  <div>
-                    <div style={{fontWeight:800,fontSize:15,color:C.gold}}>{shopInfo.name}</div>
-                    <div style={{fontSize:12,color:C.muted,marginTop:2}}>{shopInfo.address}</div>
-                    {shopInfo.phone&&<div style={{fontSize:12,color:C.muted}}>{shopInfo.phone}</div>}
-                  </div>
                 </div>
                 {editShop&&(
                   <div style={{display:"flex",flexDirection:"column",gap:9}}>
@@ -832,34 +891,6 @@ export default function AmlyPOS() {
                   </div>
                 )}
               </div>
-              <div style={{...S.card,marginBottom:14,background:"rgba(201,168,76,0.05)",border:`1px solid ${C.gold}`}}>
-                <div style={{fontWeight:700,marginBottom:8,color:C.gold}}>🔌 Statut connexion Supabase</div>
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
-                  <span style={{width:10,height:10,borderRadius:"50%",background:dbStatus==="ok"?C.green:C.red}}></span>
-                  <span style={{fontSize:12,fontWeight:600,color:dbStatus==="ok"?C.green:C.red}}>
-                    {dbStatus==="ok"?"Connectée":"Non connectée"}
-                  </span>
-                </div>
-                <div style={{fontSize:11,color:C.muted,marginBottom:4}}>URL: {URL_}</div>
-                <div style={{fontSize:11,color:C.muted,marginBottom:10}}>Produits: {products.length} | Ventes: {sales.length} | Tables: {tables.length}</div>
-                <button onClick={loadAll} style={{...S.btnG,width:"auto",padding:"6px 16px",fontSize:11}}>🔄 Tester la connexion</button>
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-                {[
-                  {i:"👥",l:"Gestion des employés",d:"Ajouter, modifier, désactiver"},
-                  {i:"🖨️",l:"Imprimante de reçus",d:"Configurer l'imprimante thermique"},
-                  {i:"💱",l:"Devise & TVA",d:"FCFA, taux de TVA"},
-                  {i:"🔒",l:"Sécurité",d:"Mots de passe, accès"},
-                ].map(c=>(
-                  <div key={c.l} style={{...S.card,cursor:"pointer",transition:"border-color .15s"}}
-                    onMouseEnter={e=>e.currentTarget.style.borderColor=C.gold}
-                    onMouseLeave={e=>e.currentTarget.style.borderColor=C.border}>
-                    <div style={{fontSize:22,marginBottom:7}}>{c.i}</div>
-                    <div style={{fontWeight:700,marginBottom:2,fontSize:12}}>{c.l}</div>
-                    <div style={{fontSize:11,color:C.muted}}>{c.d}</div>
-                  </div>
-                ))}
-              </div>
             </div>
           )}
         </div>
@@ -869,12 +900,7 @@ export default function AmlyPOS() {
       {modal==="confirm"&&(
         <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000}} onClick={()=>setModal(null)}>
           <div style={{...S.card,width:400,maxHeight:"80vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
-            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
-              <HitLogo size={28}/><span style={{fontWeight:800,fontSize:15}}>Confirmer l'encaissement</span>
-            </div>
-            <div style={{fontSize:11,color:orderType==="sur_place"?C.green:C.blue,fontWeight:600,marginBottom:10}}>
-              {orderType==="sur_place"?`🍽 Sur place${selTable?` · ${selTable.label}`:""}` :"🥡 Emporter"}
-            </div>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}><HitLogo size={28}/><span style={{fontWeight:800,fontSize:15}}>Confirmer l'encaissement</span></div>
             {cart.map(i=>(
               <div key={i.id} style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:5}}>
                 <span>{i.img} {i.name} × {i.qty}</span>
@@ -885,7 +911,7 @@ export default function AmlyPOS() {
               {discount>0&&<div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:C.muted}}><span>Remise</span><span>-{fmt(discount)} F</span></div>}
               <div style={{display:"flex",justifyContent:"space-between",fontWeight:800,fontSize:14}}><span>Total</span><span style={{color:C.green}}>{fmt(cartTotal)} F</span></div>
               <div style={{fontSize:11,color:C.muted}}>Mode : {methodLabel}</div>
-              {change>0&&<div style={{fontSize:11,color:C.green}}>Monnaie : {fmt(change)} F {rendMode!=="Espèces"?`via ${rendMode}`:""}</div>}
+              {change>0&&<div style={{fontSize:11,color:C.green}}>Monnaie : {fmt(change)} F</div>}
             </div>
             <div style={{display:"flex",gap:8,marginTop:12}}>
               <button style={S.btnG} onClick={confirmSale}>✓ Valider</button>
@@ -900,7 +926,7 @@ export default function AmlyPOS() {
           <div style={{...S.card,width:420,maxHeight:"85vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
             <div style={{textAlign:"center",marginBottom:12,paddingBottom:12,borderBottom:`1px solid ${C.border}`}}>
               <HitLogo size={36}/>
-              <div style={{fontWeight:900,fontSize:14,color:C.gold,marginTop:6,fontFamily:"Impact,sans-serif"}}>HIT FAST FOOD</div>
+              <div style={{fontWeight:900,fontSize:14,color:C.gold,marginTop:6}}>HIT FAST FOOD</div>
               <div style={{fontSize:11,color:C.muted}}>{shopInfo.address}</div>
             </div>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}>
@@ -909,14 +935,13 @@ export default function AmlyPOS() {
             </div>
             {saleItems[selSale.id]&&(
               <table style={{width:"100%",borderCollapse:"collapse",marginBottom:10}}>
-                <thead><tr>{["Produit","Qté","Prix","Bénéf.","Total"].map(h=><th key={h} style={S.th}>{h}</th>)}</tr></thead>
+                <thead><tr>{["Produit","Qté","Prix","Total"].map(h=><th key={h} style={S.th}>{h}</th>)}</tr></thead>
                 <tbody>
                   {saleItems[selSale.id].map((i,idx)=>(
                     <tr key={idx}>
                       <td style={{...S.td,fontSize:11}}>{i.name}</td>
                       <td style={S.td}>{i.qty}</td>
                       <td style={S.td}>{fmt(i.price)}</td>
-                      <td style={{...S.td,color:C.green,fontSize:11}}>{fmt((i.price-i.cost)*i.qty)}</td>
                       <td style={{...S.td,color:C.gold,fontWeight:700}}>{fmt(i.price*i.qty)}</td>
                     </tr>
                   ))}
@@ -924,7 +949,6 @@ export default function AmlyPOS() {
               </table>
             )}
             <div style={{background:C.dark3,borderRadius:9,padding:11,display:"flex",flexDirection:"column",gap:5,fontSize:12,marginBottom:12}}>
-              <div style={{display:"flex",justifyContent:"space-between"}}><span style={{color:C.muted}}>Remise</span><span>{fmt(selSale.discount)} F</span></div>
               <div style={{display:"flex",justifyContent:"space-between",fontWeight:800,fontSize:14}}><span>Total</span><span style={{color:C.green}}>{fmt(selSale.total)} F</span></div>
               <div style={{display:"flex",justifyContent:"space-between"}}><span style={{color:C.muted}}>Mode</span><span style={{color:"#93c5fd",fontSize:11}}>{selSale.method}</span></div>
               <div style={{display:"flex",justifyContent:"space-between"}}><span style={{color:C.muted}}>Vendeur</span><span>{selSale.vendor}</span></div>
@@ -939,20 +963,46 @@ export default function AmlyPOS() {
           <div style={{...S.card,width:380}} onClick={e=>e.stopPropagation()}>
             <div style={{fontWeight:800,fontSize:15,marginBottom:14}}>Nouveau produit</div>
             <div style={{display:"flex",flexDirection:"column",gap:9}}>
-              {[{l:"Nom",k:"name",t:"text",p:"Ex: Poulet braisé"},{l:"Emoji",k:"img",t:"text",p:"🍗"},{l:"Prix (FCFA)",k:"price",t:"number",p:"5000"},{l:"Coût achat (FCFA)",k:"cost",t:"number",p:"2000"},{l:"Stock",k:"stock",t:"number",p:"10"}].map(f=>(
+              {[{l:"Nom",k:"name",t:"text",p:"Ex: Poulet braisé"},{l:"Emoji",k:"img",t:"text",p:"🍗"},{l:"URL image (optionnel)",k:"img_url",t:"text",p:"https://..."},{l:"Prix (FCFA)",k:"price",t:"number",p:"5000"},{l:"Coût achat (FCFA)",k:"cost",t:"number",p:"2000"},{l:"Stock",k:"stock",t:"number",p:"10"}].map(f=>(
                 <div key={f.k}>
                   <div style={{fontSize:10,color:C.muted,marginBottom:3}}>{f.l}</div>
-                  <input style={S.input} type={f.t} placeholder={f.p} value={newP[f.k]} onChange={e=>setNewP(p=>({...p,[f.k]:e.target.value}))}/>
+                  <input style={S.input} type={f.t} placeholder={f.p} value={newP[f.k]||""} onChange={e=>setNewP(p=>({...p,[f.k]:e.target.value}))}/>
                 </div>
               ))}
               <div>
                 <div style={{fontSize:10,color:C.muted,marginBottom:3}}>Catégorie</div>
-                <select style={{...S.input}} value={newP.cat} onChange={e=>setNewP(p=>({...p,cat:e.target.value}))}>
+                <select style={S.input} value={newP.cat} onChange={e=>setNewP(p=>({...p,cat:e.target.value}))}>
                   {["Plats","Boissons","Desserts"].map(c=><option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div style={{display:"flex",gap:8,marginTop:4}}>
                 <button style={S.btnG} onClick={addProduct}>Ajouter</button>
+                <button style={S.btnO} onClick={()=>setModal(null)}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {modal==="addIng"&&(
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000}} onClick={()=>setModal(null)}>
+          <div style={{...S.card,width:380}} onClick={e=>e.stopPropagation()}>
+            <div style={{fontWeight:800,fontSize:15,marginBottom:14}}>Nouvel ingrédient</div>
+            <div style={{display:"flex",flexDirection:"column",gap:9}}>
+              {[{l:"Nom",k:"name",t:"text",p:"Ex: Farine"},{l:"Stock actuel",k:"stock",t:"number",p:"10"},{l:"Stock minimum",k:"stock_min",t:"number",p:"2"},{l:"Coût par unité (FCFA)",k:"cost_unit",t:"number",p:"500"}].map(f=>(
+                <div key={f.k}>
+                  <div style={{fontSize:10,color:C.muted,marginBottom:3}}>{f.l}</div>
+                  <input style={S.input} type={f.t} placeholder={f.p} value={newI[f.k]||""} onChange={e=>setNewI(p=>({...p,[f.k]:e.target.value}))}/>
+                </div>
+              ))}
+              <div>
+                <div style={{fontSize:10,color:C.muted,marginBottom:3}}>Unité</div>
+                <select style={S.input} value={newI.unit} onChange={e=>setNewI(p=>({...p,unit:e.target.value}))}>
+                  {["kg","g","l","ml","pièce","tranche","bouteille","sachet"].map(u=><option key={u} value={u}>{u}</option>)}
+                </select>
+              </div>
+              <div style={{display:"flex",gap:8,marginTop:4}}>
+                <button style={S.btnG} onClick={addIngredient}>Ajouter</button>
                 <button style={S.btnO} onClick={()=>setModal(null)}>Annuler</button>
               </div>
             </div>
