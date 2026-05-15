@@ -337,24 +337,27 @@ export default function AmlyPOS() {
     setLoading(true);
     try {
       let prods = await sb.get("products");
-      if(prods?.code){ setDbStatus("error"); showToast("Erreur DB: "+prods.message,true); setLoading(false); return; }
-      if(!prods||prods.length===0){ for(const p of DEFAULT_PRODUCTS) await sb.insert("products",p); prods=await sb.get("products"); }
-      setProducts(Array.isArray(prods)?prods:[]);
-      const s=await sb.get("sales"); setSales(Array.isArray(s)?s:[]);
-      const t=await sb.get("tables_restaurant","&order=numero.asc"); setTables(Array.isArray(t)?t:[]);
-      const ing=await sb.get("ingredients","&order=name.asc"); setIngredients(Array.isArray(ing)?ing:[]);
-      const rec=await sb.get("recettes"); setRecettes(Array.isArray(rec)?rec:[]);
-      // Clients
-      let cl = await sb.get("clients").catch(()=>[]); setClients(Array.isArray(cl)?cl:[]);
-      // Pertes
-      let pt = await sb.get("pertes").catch(()=>[]); setPertes(Array.isArray(pt)?pt:[]);
-      // Réservations
-      let rs = await sb.get("reservations").catch(()=>[]); setReservations(Array.isArray(rs)?rs:[]);
-      // Employés sauvegardés
-      let emps = await sb.get("employees").catch(()=>[]);
-      if(Array.isArray(emps)&&emps.length>0) setEmployees(emps);
+      if(prods?.code || prods?.error) {
+        setDbStatus("error");
+        showToast("DB: " + (prods?.message||prods?.code||"Erreur"), true);
+        setLoading(false); return;
+      }
+      if(!prods || !Array.isArray(prods) || prods.length === 0) {
+        for(const p of DEFAULT_PRODUCTS) await sb.insert("products", p);
+        prods = await sb.get("products");
+      }
+      setProducts(Array.isArray(prods) ? prods : []);
+      const s = await sb.get("sales"); setSales(Array.isArray(s)?s:[]);
+      const t = await sb.get("tables_restaurant","&order=numero.asc"); setTables(Array.isArray(t)?t:[]);
+      const ing = await sb.get("ingredients","&order=name.asc"); setIngredients(Array.isArray(ing)?ing:[]);
+      const rec = await sb.get("recettes"); setRecettes(Array.isArray(rec)?rec:[]);
+      const cl = await sb.get("clients").catch(()=>[]); setClients(Array.isArray(cl)?cl:[]);
+      const pt = await sb.get("pertes").catch(()=>[]); setPertes(Array.isArray(pt)?pt:[]);
+      const rs = await sb.get("reservations").catch(()=>[]); setReservations(Array.isArray(rs)?rs:[]);
+      const emps = await sb.get("employees").catch(()=>[]);
+      if(Array.isArray(emps) && emps.length > 0) setEmployees(emps);
       setDbStatus("ok");
-    } catch(e){ setDbStatus("error"); showToast("Erreur connexion",true); }
+    } catch(e){ setDbStatus("error"); showToast("Erreur: " + e.message, true); }
     setLoading(false);
   };
 
@@ -528,9 +531,41 @@ export default function AmlyPOS() {
   const addProduct = async () => {
     if(!newP.name||!newP.price||!newP.stock){showToast("Champs manquants",true);return;}
     setLoading(true);
-    await sb.insert("products",{...newP,price:Number(newP.price),cost:Number(newP.cost||0),stock:Number(newP.stock)});
-    setNewP({name:"",cat:"Plats",price:"",cost:"",stock:"",img:"🍽️",img_url:""}); setImgPreview("");
-    await loadAll(); setModal(null); showToast("Produit ajouté ✓");
+    try {
+      // Limiter la taille de img_url si c'est du base64 (max 200KB)
+      let img_url = newP.img_url || "";
+      if(img_url.startsWith("data:") && img_url.length > 200000) {
+        showToast("Photo trop lourde, réduis l'image",true);
+        setLoading(false); return;
+      }
+      const payload = {
+        name: newP.name,
+        cat: newP.cat || "Plats",
+        price: Number(newP.price),
+        cost: Number(newP.cost||0),
+        stock: Number(newP.stock),
+        img: newP.img || "🍽️",
+        img_url: img_url,
+      };
+      const result = await sb.insert("products", payload);
+      if(!result || (result.code && result.code !== "201")) {
+        showToast("Erreur Supabase: " + (result?.message||result?.code||"inconnue"), true);
+        setLoading(false); return;
+      }
+      // Ajouter localement immédiatement sans attendre Supabase
+      const newProduct = Array.isArray(result) ? result[0] : result;
+      if(newProduct && newProduct.id) {
+        setProducts(prev => [newProduct, ...prev]);
+      }
+      setNewP({name:"",cat:"Plats",price:"",cost:"",stock:"",img:"🍽️",img_url:""});
+      setImgPreview("");
+      setModal(null);
+      showToast("Produit ajouté ✓");
+      // Recharger en arrière-plan
+      loadAll();
+    } catch(e) {
+      showToast("Erreur: " + e.message, true);
+    }
     setLoading(false);
   };
 
@@ -578,7 +613,12 @@ export default function AmlyPOS() {
     setLoading(false);
   };
 
-  const deleteRecette = async (id) => { await sb.del("recettes",id); await loadAll(); showToast("Supprimé ✓"); };
+  const deleteRecette    = async (id) => { await sb.del("recettes",id);    await loadAll(); showToast("Recette supprimée ✓"); };
+  const deleteProduct    = async (id) => { await sb.del("products",id);    setProducts(prev=>prev.filter(p=>p.id!==id)); showToast("Produit supprimé ✓"); loadAll(); };
+  const deleteIngredient = async (id) => { await sb.del("ingredients",id); setIngredients(prev=>prev.filter(i=>i.id!==id)); showToast("Ingrédient supprimé ✓"); loadAll(); };
+  const deleteEmployee   = async (idx) => { const e=employees[idx]; if(e.id) await sb.del("employees",e.id).catch(()=>{}); setEmployees(prev=>prev.filter((_,i)=>i!==idx)); showToast("Employé supprimé ✓"); };
+  const deleteClient     = async (id)  => { await sb.del("clients",id);    setClients(prev=>prev.filter(c=>c.id!==id)); showToast("Client supprimé ✓"); loadAll(); };
+  const deleteReservation= async (id)  => { await sb.del("reservations",id); setReservations(prev=>prev.filter(r=>r.id!==id)); showToast("Réservation supprimée ✓"); };
   const updateIngredientStock = async (id, ns) => { await sb.update("ingredients",id,{stock:Number(ns)}); await loadAll(); showToast("Stock mis à jour ✓"); };
 
   // ── Clôture Z ──
@@ -652,11 +692,32 @@ export default function AmlyPOS() {
   const nav = role==="admin" ? ADMIN_NAV : EMP_NAV;
   const filteredIng = ingredients.filter(i=>i.name.toLowerCase().includes(ingSearch.toLowerCase()));
 
+  // Logos SVG Wave et Orange Money
+  const WaveLogo = ({size=14}) => (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="8" fill="#1B75BB"/>
+      <path d="M6 20C8 16 10 12 14 12C17 12 17 16 20 16C23 16 24 12 26 12" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/>
+      <path d="M6 24C8 20 10 16 14 16C17 16 17 20 20 20C23 20 24 16 26 16" stroke="#FFC107" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+  const OMLogo = ({size=14}) => (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="16" fill="#FF6600"/>
+      <circle cx="16" cy="16" r="7" fill="#fff"/>
+      <circle cx="16" cy="16" r="4" fill="#FF6600"/>
+    </svg>
+  );
+
   const MBtn = ({m,active,onClick,color}) => (
     <button onClick={onClick} style={{flex:1,padding:"5px 3px",border:`1px solid ${active?(color||C.accent):C.border}`,borderRadius:6,
-      cursor:"pointer",fontSize:10,fontWeight:600,whiteSpace:"nowrap",
+      cursor:"pointer",fontSize:10,fontWeight:600,whiteSpace:"nowrap",display:"flex",alignItems:"center",justifyContent:"center",gap:3,
       background:active?(color||C.accent):"transparent",color:active?"#fff":C.muted}}>
-      {m==="Wave"?"〰 Wave":m==="Orange Money"?"🟠 OM":m==="Glovo"?"🛵 Glovo":m}
+      {m==="Wave"?<><WaveLogo size={13}/><span>Wave</span></>
+      :m==="Orange Money"?<><OMLogo size={13}/><span>OM</span></>
+      :m==="Glovo"?<><span>🛵</span><span>Glovo</span></>
+      :m==="Espèces"?<><span>💵</span><span>Espèces</span></>
+      :m==="Carte"?<><span>💳</span><span>Carte</span></>
+      :m}
     </button>
   );
 
@@ -1014,7 +1075,7 @@ export default function AmlyPOS() {
               <input style={{...S.input,marginBottom:12}} placeholder="🔍 Rechercher…" value={ingSearch} onChange={e=>setIngSearch(e.target.value)}/>
               <div style={S.card}>
                 <table style={{width:"100%",borderCollapse:"collapse"}}>
-                  <thead><tr>{["Ingrédient","Unité","Stock","Min","Coût/u","Statut","Modifier"].map(h=><th key={h} style={S.th}>{h}</th>)}</tr></thead>
+                  <thead><tr>{["Ingrédient","Unité","Stock","Min","Coût/u","Statut","Modifier",""].map(h=><th key={h} style={S.th}>{h}</th>)}</tr></thead>
                   <tbody>
                     {filteredIng.map(i=>{
                       const st=i.stock<=0?"Épuisé":i.stock<=i.stock_min?"Critique":"OK";
@@ -1028,6 +1089,7 @@ export default function AmlyPOS() {
                           <td style={{...S.td,color:C.muted}}>{fmt(i.cost_unit)} F</td>
                           <td style={S.td}><span style={{display:"inline-block",padding:"2px 8px",borderRadius:8,fontSize:10,fontWeight:600,background:`${sc}22`,color:sc}}>{st}</span></td>
                           <td style={S.td}><input type="number" defaultValue={i.stock} onBlur={e=>{if(Number(e.target.value)!==i.stock)updateIngredientStock(i.id,e.target.value);}} style={{...S.input,width:65,padding:"3px 6px",fontSize:11,textAlign:"center"}}/></td>
+                          <td style={S.td}><button onClick={()=>deleteIngredient(i.id)} style={{background:`${C.red}18`,color:C.red,border:`1px solid ${C.red}40`,borderRadius:6,padding:"3px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>🗑️</button></td>
                         </tr>
                       );
                     })}
@@ -1107,7 +1169,7 @@ export default function AmlyPOS() {
               </div>
               <div style={S.card}>
                 <table style={{width:"100%",borderCollapse:"collapse"}}>
-                  <thead><tr>{["","Produit","Cat.","Coût","Prix","Marge","%","Stock"].map(h=><th key={h} style={S.th}>{h}</th>)}</tr></thead>
+                  <thead><tr>{["","Produit","Cat.","Coût","Prix","Marge","%","Stock",""].map(h=><th key={h} style={S.th}>{h}</th>)}</tr></thead>
                   <tbody>
                     {products.map(p=>{const mg=p.price-p.cost,pct=p.price>0?((mg/p.price)*100).toFixed(1):0;return(
                       <tr key={p.id}>
@@ -1119,6 +1181,12 @@ export default function AmlyPOS() {
                         <td style={{...S.td,color:C.green,fontWeight:700}}>{fmt(mg)} F</td>
                         <td style={{...S.td,color:C.green,fontWeight:700}}>{pct}%</td>
                         <td style={{...S.td,color:p.stock<5?C.red:C.txt}}>{p.stock}</td>
+                        <td style={S.td}>
+                          <div style={{display:"flex",gap:4}}>
+                            <button onClick={()=>{setSelProduct(p);setNewP({name:p.name,cat:p.cat,price:String(p.price),cost:String(p.cost||0),stock:String(p.stock),img:p.img||"🍽️",img_url:p.img_url||""});setImgPreview(p.img_url||"");setModal("editProd");}} style={{background:`${C.blue}15`,color:C.blue,border:`1px solid ${C.blue}40`,borderRadius:6,padding:"3px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>✏️</button>
+                            <button onClick={()=>deleteProduct(p.id)} style={{background:`${C.red}18`,color:C.red,border:`1px solid ${C.red}40`,borderRadius:6,padding:"3px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>🗑️</button>
+                          </div>
+                        </td>
                       </tr>
                     );})}
                   </tbody>
@@ -1206,6 +1274,7 @@ export default function AmlyPOS() {
                       <div style={{width:`${Math.min(100,(cl.points||0)/10)}%`,background:C.gold,height:"100%",borderRadius:6,transition:"width .5s"}}></div>
                     </div>
                     <div style={{fontSize:9,color:C.muted,marginTop:3}}>Prochain palier : {Math.max(0,100-(cl.points||0)%100)} pts</div>
+                    <button onClick={(e)=>{e.stopPropagation();deleteClient(cl.id);}} style={{marginTop:8,width:"100%",padding:"5px",borderRadius:6,border:`1px solid ${C.red}40`,background:`${C.red}12`,color:C.red,cursor:"pointer",fontSize:10,fontWeight:700}}>🗑️ Supprimer</button>
                   </div>
                 ))}
                 {clients.length===0&&<div style={{color:C.muted,fontSize:13,padding:20}}>Aucun client enregistré</div>}
@@ -1238,6 +1307,7 @@ export default function AmlyPOS() {
                         ))}
                       </div>
                     )}
+                    <button onClick={()=>deleteReservation(r.id)} style={{marginTop:8,padding:"4px 12px",borderRadius:6,border:`1px solid ${C.red}40`,background:`${C.red}12`,color:C.red,cursor:"pointer",fontSize:10,fontWeight:700}}>🗑️ Supprimer</button>
                   </div>
                 ))}
                 {reservations.length===0&&<div style={{color:C.muted,fontSize:13,padding:20}}>Aucune réservation</div>}
@@ -1310,6 +1380,10 @@ export default function AmlyPOS() {
                     <div style={{display:"flex",justifyContent:"space-between",fontSize:11,marginTop:4}}>
                       <span style={{color:C.muted}}>Statut</span>
                       <span style={{color:emp.active!==false?C.green:C.red,fontWeight:600}}>{emp.active!==false?"Actif":"Inactif"}</span>
+                    </div>
+                    <div style={{display:"flex",gap:6,marginTop:10}}>
+                      <button onClick={()=>{ const p=emp.pin; alert("PIN: "+p); }} style={{flex:1,padding:"5px",borderRadius:6,border:`1px solid ${C.border}`,background:"transparent",color:C.muted,cursor:"pointer",fontSize:10,fontWeight:600}}>👁 PIN</button>
+                      <button onClick={()=>deleteEmployee(i)} style={{flex:1,padding:"5px",borderRadius:6,border:`1px solid ${C.red}40`,background:`${C.red}12`,color:C.red,cursor:"pointer",fontSize:10,fontWeight:700}}>🗑️ Suppr.</button>
                     </div>
                   </div>
                 ))}
@@ -1590,6 +1664,42 @@ export default function AmlyPOS() {
             <div style={{display:"flex",gap:8}}>
               <button style={S.btnR} onClick={cancelOrder}>✕ Confirmer annulation</button>
               <button style={S.btnO} onClick={()=>{setModal(null);setCancelNote("");setCancelTarget(null);}}>Retour</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modifier produit */}
+      {modal==="editProd"&&selProduct&&(
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.75)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000}} onClick={()=>setModal(null)}>
+          <div style={{...S.card,width:400,maxHeight:"88vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+            <div style={{fontWeight:800,fontSize:15,marginBottom:14,color:C.txt}}>✏️ Modifier — {selProduct.name}</div>
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,color:C.muted,marginBottom:5,fontWeight:600}}>PHOTO</div>
+              <div style={{display:"flex",gap:10,alignItems:"center"}}>
+                {imgPreview?<img src={imgPreview} alt="preview" style={{width:70,height:70,objectFit:"cover",borderRadius:9,border:`2px solid ${C.accent}`,flexShrink:0}}/>
+                  :<div style={{width:70,height:70,borderRadius:9,border:`2px dashed ${C.border}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,background:C.surface2,flexShrink:0,cursor:"pointer"}} onClick={()=>fileInputRef.current?.click()}>📷</div>}
+                <div style={{flex:1,display:"flex",flexDirection:"column",gap:5}}>
+                  <button onClick={()=>fileInputRef.current?.click()} style={{...S.btnO,padding:"7px 10px",fontSize:11}}>📁 Changer image</button>
+                  <input ref={fileInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>handleImageFile(e.target.files[0])}/>
+                  <input style={{...S.input,fontSize:11}} placeholder="ou URL https://..." value={newP.img_url||""} onChange={e=>{setNewP(p=>({...p,img_url:e.target.value}));setImgPreview(e.target.value);}}/>
+                </div>
+              </div>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:9}}>
+              {[{l:"Nom",k:"name",t:"text"},{l:"Emoji",k:"img",t:"text"},{l:"Prix (FCFA)",k:"price",t:"number"},{l:"Coût (FCFA)",k:"cost",t:"number"},{l:"Stock",k:"stock",t:"number"}].map(f=>(
+                <div key={f.k}><div style={{fontSize:10,color:C.muted,marginBottom:3,fontWeight:600}}>{f.l.toUpperCase()}</div><input style={S.input} type={f.t} value={newP[f.k]||""} onChange={e=>setNewP(p=>({...p,[f.k]:e.target.value}))}/></div>
+              ))}
+              <div><div style={{fontSize:10,color:C.muted,marginBottom:3,fontWeight:600}}>CATÉGORIE</div><select style={S.input} value={newP.cat} onChange={e=>setNewP(p=>({...p,cat:e.target.value}))}>{["Plats","Boissons","Desserts"].map(c=><option key={c} value={c}>{c}</option>)}</select></div>
+              <div style={{display:"flex",gap:8,marginTop:4}}>
+                <button style={S.btnG} onClick={async()=>{
+                  if(!newP.name||!newP.price){showToast("Champs manquants",true);return;}
+                  setLoading(true);
+                  await sb.update("products",selProduct.id,{name:newP.name,cat:newP.cat,price:Number(newP.price),cost:Number(newP.cost||0),stock:Number(newP.stock||0),img:newP.img||"🍽️",img_url:newP.img_url||""});
+                  await loadAll(); setModal(null); showToast("Produit mis à jour ✓"); setLoading(false);
+                }}>✓ Enregistrer</button>
+                <button style={S.btnO} onClick={()=>setModal(null)}>Annuler</button>
+              </div>
             </div>
           </div>
         </div>
