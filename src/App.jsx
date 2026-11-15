@@ -35,7 +35,8 @@ const menuPhoto = (name) => {
   // Le Poulet HIT utilise son nouveau visuel dédié.
   if(n.includes("poulet hit")) return "/menu/POULET HIT .jpg";
   if(n.includes("poulet") && n.includes("mayo")) return "/menu/Poulet_mayo.jpg";
-  if(n.includes("poulet") && (n.includes("braise") || n.includes("flambe"))) return "/menu/Poulet_braise.jpg";
+  if(n.includes("poulet") && n.includes("flambe")) return "/menu/Poulet_flambe.jpg";
+  if(n.includes("poulet") && n.includes("braise")) return "/menu/Poulet_braise.jpg";
   if(n.includes("attieke")) return "/menu/Attieke.jpg";
   if(n.includes("dibi") || n.includes("ntaba")) return "/menu/Dibi.jpg";
   if(n.includes("coca-cola") || n.includes("coca cola")) return "/menu/Coca-Cola.jpg";
@@ -56,7 +57,7 @@ const menuPhoto = (name) => {
 // Pour la queue de bœuf, le visuel du menu doit remplacer toute ancienne photo enregistrée.
 const productPhoto = (p) => {
   const n = (p?.name || "").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
-  if(n.includes("queue de boeuf") || n.includes("ntaba") || n.includes("dibi")) return menuPhoto(p.name);
+  if(n.includes("queue de boeuf") || n.includes("ntaba") || n.includes("dibi") || n.includes("poulet") && n.includes("flambe")) return menuPhoto(p.name);
   return p?.img_url || menuPhoto(p?.name);
 };
 
