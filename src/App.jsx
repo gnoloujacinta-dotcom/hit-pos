@@ -20,6 +20,24 @@ const CATS     = ["Tout","Plats","Boissons","Desserts"];
 const METHODS  = ["Espèces","Wave","Orange Money","Carte","Glovo"];
 const PAY_COLORS = ["#4f46e5","#3b82f6","#f97316","#8b5cf6","#ec4899"];
 
+const menuPhoto = (name) => {
+  const n = (name || "").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
+  if(n.includes("tacos")) return "/menu/French_tacos.jpg";
+  if(n.includes("burger")) return "/menu/Burger.jpg";
+  if(n.includes("poulet mayo")) return "/menu/Poulet_mayo.jpg";
+  if(n.includes("poulet braise") || n.includes("poulet flambe")) return "/menu/Poulet_braise.jpg";
+  if(n.includes("pizza")) return "/menu/Pizza.jpg";
+  if(n.includes("tagliatelle alfredo")) return "/menu/Tagliatelle_Alfredo.jpg";
+  if(n.includes("tagliatelle bolognaise")) return "/menu/Tagliatelle_bolognaise.jpg";
+  if(n.includes("salade cesar")) return "/menu/Salade_Cesar.jpg";
+  if(n.includes("crepe chocolat")) return "/menu/Crepe_chocolat.jpg";
+  if(n.includes("tiramisu")) return "/menu/Tiramisu.jpg";
+  if(n.includes("milkshake chocolat")) return "/menu/Milkshake_chocolat.jpg";
+  if(n.includes("milkshake fraise")) return "/menu/Milkshake_fraise.jpg";
+  if(n.includes("milkshake vanille")) return "/menu/Milkshake_vanille.jpg";
+  return "";
+};
+
 const MENU_PRODUCTS = [
   // Tacos et burgers
   {name:"Tacos viande hachée + frites",cat:"Plats",price:5000,img:"🌮"},
@@ -987,7 +1005,7 @@ export default function AmlyPOS() {
                       style={{background:C.cardBg,border:`1px solid ${C.cardBorder}`,borderRadius:12,padding:10,cursor:p.stock>0?"pointer":"not-allowed",textAlign:"center",opacity:p.stock===0?0.45:1,display:"flex",flexDirection:"column",gap:4,boxShadow:C.shadow,transition:"all .15s"}}
                       onMouseEnter={e=>{if(p.stock>0){e.currentTarget.style.borderColor=C.accent;e.currentTarget.style.transform="translateY(-2px)";}}}
                       onMouseLeave={e=>{e.currentTarget.style.borderColor=C.cardBorder;e.currentTarget.style.transform="none";}}>
-                      {p.img_url?<img src={p.img_url} alt={p.name} style={{width:"100%",height:72,objectFit:"cover",borderRadius:8}}/>
+                      {(p.img_url||menuPhoto(p.name))?<img src={p.img_url||menuPhoto(p.name)} alt={p.name} style={{width:"100%",height:72,objectFit:"cover",borderRadius:8}}/>
                         :<div style={{fontSize:32,height:72,display:"flex",alignItems:"center",justifyContent:"center",background:C.surface2,borderRadius:8}}>{p.img}</div>}
                       <div style={{fontSize:11,fontWeight:600,lineHeight:1.3,color:C.txt}}>{p.name}</div>
                       <div style={{fontSize:12,fontWeight:800,color:C.accent}}>{fmt(p.price)} F</div>
@@ -1301,7 +1319,7 @@ export default function AmlyPOS() {
                   <tbody>
                     {products.map(p=>{const mg=p.price-p.cost,pct=p.price>0?((mg/p.price)*100).toFixed(1):0;return(
                       <tr key={p.id}>
-                        <td style={S.td}>{p.img_url?<img src={p.img_url} alt={p.name} style={{width:30,height:30,objectFit:"cover",borderRadius:5}}/>:<span style={{fontSize:18}}>{p.img}</span>}</td>
+                        <td style={S.td}>{(p.img_url||menuPhoto(p.name))?<img src={p.img_url||menuPhoto(p.name)} alt={p.name} style={{width:30,height:30,objectFit:"cover",borderRadius:5}}/>:<span style={{fontSize:18}}>{p.img}</span>}</td>
                         <td style={{...S.td,fontWeight:600,color:C.txt}}>{p.name}</td>
                         <td style={S.td}><span style={{display:"inline-block",padding:"2px 7px",borderRadius:8,fontSize:10,fontWeight:600,background:C.accentBg,color:C.accent}}>{p.cat}</span></td>
                         <td style={{...S.td,color:C.muted}}>{fmt(p.cost)} F</td>
@@ -1363,7 +1381,7 @@ export default function AmlyPOS() {
                   <tbody>
                     {products.map(p=>(
                       <tr key={p.id}>
-                        <td style={S.td}>{p.img_url?<img src={p.img_url} alt={p.name} style={{width:26,height:26,objectFit:"cover",borderRadius:4}}/>:<span style={{fontSize:16}}>{p.img}</span>}</td>
+                        <td style={S.td}>{(p.img_url||menuPhoto(p.name))?<img src={p.img_url||menuPhoto(p.name)} alt={p.name} style={{width:26,height:26,objectFit:"cover",borderRadius:4}}/>:<span style={{fontSize:16}}>{p.img}</span>}</td>
                         <td style={{...S.td,fontWeight:600,color:C.txt}}>{p.name}</td>
                         <td style={{...S.td,color:C.muted}}>{p.cat}</td>
                         <td style={{...S.td,fontWeight:700,color:p.stock<5?C.red:C.txt}}>{p.stock}</td>
