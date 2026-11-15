@@ -117,7 +117,6 @@ const MENU_PRODUCTS = [
 
 const DEFAULT_PRODUCTS = [
   {name:"Jus naturel",cat:"Boissons",price:2000,cost:800,stock:20,img:"🍹"},
-  {name:"Soda",cat:"Boissons",price:1500,cost:600,stock:30,img:"🥤"},
 ];
 
 const DEFAULT_EMPLOYEES = [
@@ -445,9 +444,10 @@ export default function AmlyPOS() {
         const isSpaghettiBolognaise = n.includes("spaghetti") && n.includes("bolognaise");
         const isPouletBraise5000 = n === "poulet braise";
         const isTacosViande = n.includes("tacos") && n.includes("viande");
+        const isSoda1500 = n === "soda";
         // Retirer le gâteau chocolat, mais conserver le Moelleux au chocolat.
         const isGateauChocolat = n.includes("gateau") && n.includes("chocolat") && !n.includes("moelleux");
-        return isBrochetteBoeuf || isPoissonAttieke || isGateauChocolat || isHamburger || isSpaghettiBolognaise || isPouletBraise5000 || isTacosViande;
+        return isBrochetteBoeuf || isPoissonAttieke || isGateauChocolat || isHamburger || isSpaghettiBolognaise || isPouletBraise5000 || isTacosViande || isSoda1500;
       };
       for(const p of (Array.isArray(prods)?prods:[])) {
         if(removedProduct(p.name) && p.id) await sb.del("products",p.id);
