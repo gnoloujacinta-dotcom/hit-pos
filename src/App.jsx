@@ -21,9 +21,12 @@ const METHODS  = ["Espèces","Wave","Orange Money","Carte","Glovo"];
 const PAY_COLORS = ["#4f46e5","#3b82f6","#f97316","#8b5cf6","#ec4899"];
 
 const menuPhoto = (name) => {
-  const n = (name || "").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
+  // Normaliser correctement les accents pour que les noms français correspondent.
+  const n = (name || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
   if(n.includes("tacos")) return "/menu/French_tacos.jpg";
   if(n.includes("burger")) return "/menu/Burger.jpg";
+  if(n.includes("poulet") && n.includes("mayo")) return "/menu/Poulet_mayo.jpg";
+  if(n.includes("poulet") && (n.includes("braise") || n.includes("flambe"))) return "/menu/Poulet_braise.jpg";
   if(n.includes("pizza")) return "/menu/Pizza.jpg";
   if(n.includes("tagliatelle alfredo")) return "/menu/Tagliatelle_Alfredo.jpg";
   if(n.includes("tagliatelle bolognaise")) return "/menu/Tagliatelle_bolognaise.jpg";
