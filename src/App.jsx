@@ -63,7 +63,6 @@ const productPhoto = (p) => {
 
 const MENU_PRODUCTS = [
   // Tacos et burgers
-  {name:"Tacos viande hachée + frites",cat:"Plats",price:5000,img:"🌮"},
   {name:"Tacos poulet + frites",cat:"Plats",price:5000,img:"🌮"},
   {name:"Chicken burger + frites",cat:"Plats",price:5000,img:"🍔"},
   {name:"Double cheeseburger + frites",cat:"Plats",price:5000,img:"🍔"},
@@ -444,9 +443,10 @@ export default function AmlyPOS() {
         const isHamburger = n === "hamburger";
         const isSpaghettiBolognaise = n.includes("spaghetti") && n.includes("bolognaise");
         const isPouletBraise5000 = n === "poulet braise";
+        const isTacosViande = n.includes("tacos") && n.includes("viande");
         // Retirer le gâteau chocolat, mais conserver le Moelleux au chocolat.
         const isGateauChocolat = n.includes("gateau") && n.includes("chocolat") && !n.includes("moelleux");
-        return isBrochetteBoeuf || isPoissonAttieke || isGateauChocolat || isHamburger || isSpaghettiBolognaise || isPouletBraise5000;
+        return isBrochetteBoeuf || isPoissonAttieke || isGateauChocolat || isHamburger || isSpaghettiBolognaise || isPouletBraise5000 || isTacosViande;
       };
       for(const p of (Array.isArray(prods)?prods:[])) {
         if(removedProduct(p.name) && p.id) await sb.del("products",p.id);
