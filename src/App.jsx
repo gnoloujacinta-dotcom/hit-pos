@@ -64,6 +64,7 @@ const productPhoto = (p) => {
 const MENU_PRODUCTS = [
   // Tacos et burgers
   {name:"Tacos poulet + frites",cat:"Plats",price:5000,img:"🌮"},
+  {name:"Tacos viande hachée",cat:"Plats",price:5000,img:"🌮"},
   {name:"Chicken burger + frites",cat:"Plats",price:5000,img:"🍔"},
   {name:"Double cheeseburger + frites",cat:"Plats",price:5000,img:"🍔"},
   // Grillades et spécialités
@@ -435,7 +436,7 @@ export default function AmlyPOS() {
         prods = await sb.get("products");
       }
       // Retirer définitivement les anciens articles demandés, sans toucher aux ventes passées.
-      const normalizeProductName = (value) => (value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
+      const normalizeProductName = (value) => (value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/œ/g,"oe").trim();
       const removedProduct = (name) => {
         const n = normalizeProductName(name);
         const isBrochetteBoeuf = n.includes("brochette") && n.includes("boeuf");
