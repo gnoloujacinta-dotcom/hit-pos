@@ -432,9 +432,11 @@ export default function AmlyPOS() {
       const normalizeProductName = (value) => (value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
       const removedProduct = (name) => {
         const n = normalizeProductName(name);
-        return n.includes("brochette de boeuf") ||
-          n === "attieke poisson" || n.includes("poisson avec attieke") ||
-          n === "gateau chocolat" || n === "gateaux au chocolat" || n === "gateau au chocolat";
+        const isBrochetteBoeuf = n.includes("brochette") && n.includes("boeuf");
+        const isPoissonAttieke = n.includes("poisson") && n.includes("attieke");
+        // Retirer le gâteau chocolat, mais conserver le Moelleux au chocolat.
+        const isGateauChocolat = n.includes("gateau") && n.includes("chocolat") && !n.includes("moelleux");
+        return isBrochetteBoeuf || isPoissonAttieke || isGateauChocolat;
       };
       for(const p of (Array.isArray(prods)?prods:[])) {
         if(removedProduct(p.name) && p.id) await sb.del("products",p.id);
