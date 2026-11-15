@@ -548,6 +548,17 @@ export default function AmlyPOS() {
 
   // ── Panier ──
   const filtered = products.filter(p=>(cat==="Tout"||p.cat===cat)&&p.name.toLowerCase().includes(search.toLowerCase()));
+  const productGroup = (p) => {
+    const n=(p.name||"").toLowerCase();
+    if(n.includes("tacos") || n.includes("pizza")) return "Tacos & pizzas";
+    if(n.includes("brochette") || n.includes("dibi") || n.includes("poulet") || n.includes("viande") || n.includes("queue de") || n.includes("agneau")) return "Viandes & grillades";
+    if(n.includes("salade")) return "Salades";
+    if(p.cat==="Desserts") return "Desserts";
+    if(p.cat==="Boissons" || n.includes("milkshake") || n.includes("jus") || n.includes("coca") || n.includes("fanta") || n.includes("sprite") || n.includes("eau en")) return "Boissons";
+    return "Autres plats";
+  };
+  const productGroupOrder = ["Tacos & pizzas","Viandes & grillades","Autres plats","Salades","Desserts","Boissons"];
+  const groupedProducts = productGroupOrder.map(label=>({label,items:filtered.filter(p=>productGroup(p)===label)})).filter(g=>g.items.length);
   const cartSub   = cart.reduce((s,i)=>s+i.price*i.qty,0);
   const cartTotal = Math.max(0,cartSub-Number(discount||0));
   const paid1     = Number(amount1||0);
@@ -1043,20 +1054,26 @@ export default function AmlyPOS() {
                     <div style={{fontSize:11}}>{products.filter(p=>Number(p.stock)<=2).map(p=>`${p.name} (reste ${p.stock})`).join(" · ")}</div>
                   </div>
                 )}
-                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:10}}>
-                  {filtered.map(p=>(
-                    <div key={p.id} onClick={()=>addToCart(p)}
-                      style={{background:C.cardBg,border:`1px solid ${C.cardBorder}`,borderRadius:12,padding:10,cursor:p.stock>0?"pointer":"not-allowed",textAlign:"center",opacity:p.stock===0?0.45:1,display:"flex",flexDirection:"column",gap:4,boxShadow:C.shadow,transition:"all .15s"}}
-                      onMouseEnter={e=>{if(p.stock>0){e.currentTarget.style.borderColor=C.accent;e.currentTarget.style.transform="translateY(-2px)";}}}
-                      onMouseLeave={e=>{e.currentTarget.style.borderColor=C.cardBorder;e.currentTarget.style.transform="none";}}>
-                      {productPhoto(p)?<img src={productPhoto(p)} alt={p.name} style={{width:"100%",height:72,objectFit:"cover",borderRadius:8}}/>
-                        :<div style={{fontSize:32,height:72,display:"flex",alignItems:"center",justifyContent:"center",background:C.surface2,borderRadius:8}}>{p.img}</div>}
-                      <div style={{fontSize:11,fontWeight:600,lineHeight:1.3,color:C.txt}}>{p.name}</div>
-                      <div style={{fontSize:12,fontWeight:800,color:C.accent}}>{fmt(p.price)} F</div>
-                      <div style={{fontSize:10,color:Number(p.stock)<=2?C.red:Number(p.stock)<=5?C.orange:C.muted,fontWeight:Number(p.stock)<=2?800:400}}>Stock: {p.stock}{Number(p.stock)<=2?" · À réapprovisionner":""}</div>
+                {groupedProducts.map(group=>(
+                  <section key={group.label} style={{marginBottom:18}}>
+                    <div style={{fontSize:13,fontWeight:800,color:C.txt,marginBottom:9,paddingBottom:6,borderBottom:`1px solid ${C.border}`}}>{group.label}</div>
+                    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:10}}>
+                      {group.items.map(p=>(
+                        <div key={p.id} onClick={()=>addToCart(p)}
+                          style={{background:C.cardBg,border:`1px solid ${C.cardBorder}`,borderRadius:12,padding:10,cursor:p.stock>0?"pointer":"not-allowed",textAlign:"center",opacity:p.stock===0?0.45:1,display:"flex",flexDirection:"column",gap:4,boxShadow:C.shadow,transition:"all .15s"}}
+                          onMouseEnter={e=>{if(p.stock>0){e.currentTarget.style.borderColor=C.accent;e.currentTarget.style.transform="translateY(-2px)";}}}
+                          onMouseLeave={e=>{e.currentTarget.style.borderColor=C.cardBorder;e.currentTarget.style.transform="none";}}>
+                          {productPhoto(p)?<img src={productPhoto(p)} alt={p.name} style={{width:"100%",height:72,objectFit:"cover",borderRadius:8}}/>
+                            :<div style={{fontSize:32,height:72,display:"flex",alignItems:"center",justifyContent:"center",background:C.surface2,borderRadius:8}}>{p.img}</div>}
+                          <div style={{fontSize:11,fontWeight:600,lineHeight:1.3,color:C.txt}}>{p.name}</div>
+                          <div style={{fontSize:12,fontWeight:800,color:C.accent}}>{fmt(p.price)} F</div>
+                          <div style={{fontSize:10,color:Number(p.stock)<=2?C.red:Number(p.stock)<=5?C.orange:C.muted,fontWeight:Number(p.stock)<=2?800:400}}>Stock: {p.stock}{Number(p.stock)<=2?" · À réapprovisionner":""}</div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </section>
+                ))}
+                {groupedProducts.length===0&&<div style={{color:C.muted,textAlign:"center",padding:24}}>Aucun produit trouvé</div>}
               </div>
 
               {/* ── Panier ── */}
