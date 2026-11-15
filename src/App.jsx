@@ -27,13 +27,15 @@ const menuPhoto = (name) => {
   if(n.includes("chicken burger")) return "/menu/Chicken_Burger.jpg";
   if(n.includes("double cheese") || n.includes("double cheeseburger")) return "/menu/Double_Cheese_Burger.jpg";
   if(n.includes("burger")) return "/menu/Burger.jpg";
-  if(n.includes("queue de boeuf")) return "/menu/Queue_boeuf.jpg";
+  if(n.includes("queue de boeuf")) return "/menu/QUEUE DE BOEUF.jpg";
+  if(n.includes("soupe") && n.includes("pondeuse")) return "/menu/SOUPE DE PONDEUSE.PNG";
+  if(n.includes("poulet hit")) return "/menu/POULET HIT .jpg";
   if(n.includes("alloco")) return "/menu/Alloco.jpg";
   if(n.includes("rice bowl")) return "/menu/Rice_bowl.jpg";
   if(n.includes("frites")) return "/menu/Frites.jpg";
   // Priorité au plat principal : "poulet braisé + attiéké" doit afficher le poulet.
   if(n.includes("poulet") && n.includes("mayo")) return "/menu/Poulet_mayo.jpg";
-  if(n.includes("poulet") && (n.includes("braise") || n.includes("flambe"))) return "/menu/Poulet_braise.jpg";
+  if(n.includes("poulet") && (n.includes("braise") || n.includes("flambe"))) return "/menu/POULET HIT .jpg";
   if(n.includes("attieke")) return "/menu/Attieke.jpg";
   if(n.includes("dibi") || n.includes("ntaba")) return "/menu/Dibi.jpg";
   if(n.includes("coca-cola") || n.includes("coca cola")) return "/menu/Coca-Cola.jpg";
