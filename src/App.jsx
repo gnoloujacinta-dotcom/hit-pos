@@ -20,6 +20,60 @@ const CATS     = ["Tout","Plats","Boissons","Desserts"];
 const METHODS  = ["Espèces","Wave","Orange Money","Carte","Glovo"];
 const PAY_COLORS = ["#4f46e5","#3b82f6","#f97316","#8b5cf6","#ec4899"];
 
+const MENU_PRODUCTS = [
+  // Tacos et burgers
+  {name:"Tacos viande hachée + frites",cat:"Plats",price:5000,img:"🌮"},
+  {name:"Tacos poulet + frites",cat:"Plats",price:5000,img:"🌮"},
+  {name:"Chicken burger + frites",cat:"Plats",price:5000,img:"🍔"},
+  {name:"Double cheeseburger + frites",cat:"Plats",price:5000,img:"🍔"},
+  // Grillades et spécialités
+  {name:"Queue de bœuf + attiéké",cat:"Plats",price:5000,img:"🍖"},
+  {name:"Poulet braisé entier + attiéké",cat:"Plats",price:10000,img:"🍗"},
+  {name:"Demi-poulet braisé + attiéké",cat:"Plats",price:6000,img:"🍗"},
+  {name:"Poulet mayo entier + attiéké",cat:"Plats",price:10000,img:"🍗"},
+  {name:"Demi-poulet mayo + attiéké",cat:"Plats",price:6000,img:"🍗"},
+  {name:"Ntaba / Dibi + attiéké",cat:"Plats",price:5000,img:"🥩"},
+  {name:"Poulet flambé + attiéké",cat:"Plats",price:10000,img:"🍗"},
+  {name:"Brochettes poulet (plat)",cat:"Plats",price:4000,img:"🍢"},
+  {name:"Brochettes agneau (plat)",cat:"Plats",price:5000,img:"🍢"},
+  // Soupes
+  {name:"Soupe de pintade",cat:"Plats",price:14000,img:"🍲"},
+  {name:"Soupe de pondeuse",cat:"Plats",price:12000,img:"🍲"},
+  // Pizzas
+  {name:"Pizza poulet braisé",cat:"Plats",price:8000,img:"🍕"},
+  {name:"Pizza poulet crème fraîche",cat:"Plats",price:8000,img:"🍕"},
+  {name:"Pizza poulet tikka",cat:"Plats",price:8000,img:"🍕"},
+  {name:"Pizza poulet fumé",cat:"Plats",price:8000,img:"🍕"},
+  // Pâtes et salades
+  {name:"Tagliatelle Alfredo au poulet",cat:"Plats",price:5000,img:"🍝"},
+  {name:"Tagliatelle bolognaise",cat:"Plats",price:4000,img:"🍝"},
+  {name:"Salade César",cat:"Plats",price:4000,img:"🥗"},
+  {name:"Salade aux gésiers",cat:"Plats",price:4000,img:"🥗"},
+  // Desserts
+  {name:"Tiramisu",cat:"Desserts",price:2500,img:"🍰"},
+  {name:"Crêpe Nutella",cat:"Desserts",price:3500,img:"🥞"},
+  {name:"Moelleux chocolat",cat:"Desserts",price:3000,img:"🍫"},
+  {name:"Salade fruits de saison",cat:"Desserts",price:2000,img:"🍓"},
+  // Milkshakes et jus
+  {name:"Milkshake chocolat",cat:"Boissons",price:3000,img:"🥤"},
+  {name:"Milkshake vanille",cat:"Boissons",price:3000,img:"🥤"},
+  {name:"Milkshake fraise",cat:"Boissons",price:3000,img:"🥤"},
+  {name:"Jus frais de saison",cat:"Boissons",price:2000,img:"🧃"},
+  // Boissons
+  {name:"Coca-Cola",cat:"Boissons",price:1000,img:"🥤"},
+  {name:"Fanta",cat:"Boissons",price:1000,img:"🥤"},
+  {name:"Sprite",cat:"Boissons",price:1000,img:"🥤"},
+  {name:"Eau en bouteille",cat:"Boissons",price:1000,img:"💧"},
+  // Accompagnements vendus séparément
+  {name:"Portion frites",cat:"Plats",price:1000,img:"🍟"},
+  {name:"Portion attiéké",cat:"Plats",price:500,img:"🍚"},
+  {name:"Portion alloco",cat:"Plats",price:1000,img:"🍌"},
+  {name:"Portion riz cantonais",cat:"Plats",price:2500,img:"🍚"},
+  {name:"Portion riz blanc",cat:"Plats",price:1000,img:"🍚"},
+  // Rice bowl
+  {name:"Rice bowl au poulet",cat:"Plats",price:4000,img:"🍛"},
+];
+
 const DEFAULT_PRODUCTS = [
   {name:"Poulet braisé",cat:"Plats",price:5000,cost:2000,stock:15,img:"🍗"},
   {name:"Attiéké Poisson",cat:"Plats",price:4000,cost:1500,stock:10,img:"🐟"},
@@ -346,6 +400,15 @@ export default function AmlyPOS() {
         for(const p of DEFAULT_PRODUCTS) await sb.insert("products", p);
         prods = await sb.get("products");
       }
+      // Ajouter les références du menu sans modifier les produits ni les stocks déjà existants.
+      const knownNames = new Set((Array.isArray(prods)?prods:[]).map(p=>(p.name||"").trim().toLowerCase()));
+      for(const p of MENU_PRODUCTS) {
+        if(!knownNames.has(p.name.toLowerCase())) {
+          await sb.insert("products",{...p,cost:0,stock:10});
+          knownNames.add(p.name.toLowerCase());
+        }
+      }
+      prods = await sb.get("products");
       setProducts(Array.isArray(prods) ? prods : []);
       const s = await sb.get("sales"); setSales(Array.isArray(s)?s:[]);
       const t = await sb.get("tables_restaurant","&order=numero.asc"); setTables(Array.isArray(t)?t:[]);
@@ -874,6 +937,12 @@ export default function AmlyPOS() {
                   ))}
                 </div>
 
+                {products.filter(p=>Number(p.stock)<=2).length>0&&(
+                  <div style={{background:"#fff7ed",border:"1px solid #fdba74",borderRadius:9,padding:"9px 12px",marginBottom:12,color:"#9a3412"}}>
+                    <div style={{fontWeight:800,fontSize:12,marginBottom:4}}>⚠️ Alerte réapprovisionnement — 8 ventes atteintes</div>
+                    <div style={{fontSize:11}}>{products.filter(p=>Number(p.stock)<=2).map(p=>`${p.name} (reste ${p.stock})`).join(" · ")}</div>
+                  </div>
+                )}
                 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:10}}>
                   {filtered.map(p=>(
                     <div key={p.id} onClick={()=>addToCart(p)}
@@ -884,7 +953,7 @@ export default function AmlyPOS() {
                         :<div style={{fontSize:32,height:72,display:"flex",alignItems:"center",justifyContent:"center",background:C.surface2,borderRadius:8}}>{p.img}</div>}
                       <div style={{fontSize:11,fontWeight:600,lineHeight:1.3,color:C.txt}}>{p.name}</div>
                       <div style={{fontSize:12,fontWeight:800,color:C.accent}}>{fmt(p.price)} F</div>
-                      <div style={{fontSize:10,color:p.stock<5?C.red:C.muted}}>Stock: {p.stock}</div>
+                      <div style={{fontSize:10,color:Number(p.stock)<=2?C.red:Number(p.stock)<=5?C.orange:C.muted,fontWeight:Number(p.stock)<=2?800:400}}>Stock: {p.stock}{Number(p.stock)<=2?" · À réapprovisionner":""}</div>
                     </div>
                   ))}
                 </div>
