@@ -27,7 +27,7 @@ const MENU_PRODUCTS = [
   {name:"Chicken burger + frites",cat:"Plats",price:5000,img:"🍔"},
   {name:"Double cheeseburger + frites",cat:"Plats",price:5000,img:"🍔"},
   // Grillades et spécialités
-  {name:"Queue de bœuf + attiéké",cat:"Plats",price:5000,img:"🍖"},
+  {name:"Queue de bœuf braisée + attiéké",cat:"Plats",price:5000,img:"🍖"},
   {name:"Poulet braisé entier + attiéké",cat:"Plats",price:10000,img:"🍗"},
   {name:"Demi-poulet braisé + attiéké",cat:"Plats",price:6000,img:"🍗"},
   {name:"Poulet mayo entier + attiéké",cat:"Plats",price:10000,img:"🍗"},
@@ -52,7 +52,7 @@ const MENU_PRODUCTS = [
   // Desserts
   {name:"Tiramisu",cat:"Desserts",price:2500,img:"🍰"},
   {name:"Crêpe Nutella",cat:"Desserts",price:3500,img:"🥞"},
-  {name:"Moelleux chocolat",cat:"Desserts",price:3000,img:"🍫"},
+  {name:"Moelleux au chocolat",cat:"Desserts",price:3000,img:"🍫"},
   {name:"Salade fruits de saison",cat:"Desserts",price:2000,img:"🍓"},
   // Milkshakes et jus
   {name:"Milkshake chocolat",cat:"Boissons",price:3000,img:"🥤"},
@@ -399,6 +399,18 @@ export default function AmlyPOS() {
       if(!prods || !Array.isArray(prods) || prods.length === 0) {
         for(const p of DEFAULT_PRODUCTS) await sb.insert("products", p);
         prods = await sb.get("products");
+      }
+      // Corriger les anciens intitulés sans toucher aux prix, coûts ni stocks déjà saisis.
+      const renameMap = {
+        "queue de bœuf + attiéké":"Queue de bœuf braisée + attiéké",
+        "moelleux chocolat":"Moelleux au chocolat"
+      };
+      for(const p of (Array.isArray(prods)?prods:[])) {
+        const correctedName = renameMap[(p.name||"").trim().toLowerCase()];
+        if(correctedName) {
+          await sb.update("products",p.id,{name:correctedName});
+          p.name = correctedName;
+        }
       }
       // Ajouter les références du menu sans modifier les produits ni les stocks déjà existants.
       const knownNames = new Set((Array.isArray(prods)?prods:[]).map(p=>(p.name||"").trim().toLowerCase()));
