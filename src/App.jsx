@@ -31,13 +31,14 @@ const menuPhoto = (name) => {
   if(n.includes("alloco")) return "/menu/Alloco.jpg";
   if(n.includes("rice bowl")) return "/menu/Rice_bowl.jpg";
   if(n.includes("frites")) return "/menu/Frites.jpg";
+  // Priorité au plat principal : "poulet braisé + attiéké" doit afficher le poulet.
+  if(n.includes("poulet") && n.includes("mayo")) return "/menu/Poulet_mayo.jpg";
+  if(n.includes("poulet") && (n.includes("braise") || n.includes("flambe"))) return "/menu/Poulet_braise.jpg";
   if(n.includes("attieke")) return "/menu/Attieke.jpg";
   if(n.includes("dibi") || n.includes("ntaba")) return "/menu/Dibi.jpg";
   if(n.includes("coca-cola") || n.includes("coca cola")) return "/menu/Coca-Cola.jpg";
   if(n.includes("fanta")) return "/menu/Fanta.jpg";
   if(n.includes("moelleux au chocolat")) return "/menu/Moelleux_chocolat.jpg";
-  if(n.includes("poulet") && n.includes("mayo")) return "/menu/Poulet_mayo.jpg";
-  if(n.includes("poulet") && (n.includes("braise") || n.includes("flambe"))) return "/menu/Poulet_braise.jpg";
   if(n.includes("pizza")) return "/menu/Pizza.jpg";
   if(n.includes("tagliatelle alfredo")) return "/menu/Tagliatelle_Alfredo.jpg";
   if(n.includes("tagliatelle bolognaise")) return "/menu/Tagliatelle_bolognaise.jpg";
