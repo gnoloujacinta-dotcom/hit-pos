@@ -27,7 +27,7 @@ const menuPhoto = (name) => {
   if(n.includes("chicken burger")) return "/menu/Chicken_Burger.jpg";
   if(n.includes("double cheese") || n.includes("double cheeseburger")) return "/menu/Double_Cheese_Burger.jpg";
   if(n.includes("burger")) return "/menu/Burger.jpg";
-  if(n.includes("queue de boeuf")) return "/menu/Queue_boeuf.jpg";
+  if(n.includes("queue de boeuf") || n.includes("queue de bœuf")) return "/menu/Queue_boeuf.jpg";
   if(n.includes("soupe") && n.includes("pondeuse")) return "/menu/SOUPE DE PONDEUSE.PNG";
   if(n.includes("alloco")) return "/menu/Alloco.jpg";
   if(n.includes("rice bowl")) return "/menu/Rice_bowl.jpg";
@@ -57,7 +57,7 @@ const menuPhoto = (name) => {
 // Pour la queue de bœuf, le visuel du menu doit remplacer toute ancienne photo enregistrée.
 const productPhoto = (p) => {
   const n = (p?.name || "").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
-  if(n.includes("queue de boeuf") || n.includes("ntaba") || n.includes("dibi") || n.includes("poulet") && (n.includes("hit") || n.includes("braise") || n.includes("flambe"))) return menuPhoto(p.name);
+  if((n.includes("queue de boeuf") || n.includes("queue de bœuf")) || n.includes("ntaba") || n.includes("dibi") || (n.includes("poulet") && (n.includes("hit") || n.includes("braise") || n.includes("flambe")))) return menuPhoto(p.name);
   return p?.img_url || menuPhoto(p?.name);
 };
 
