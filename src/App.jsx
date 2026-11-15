@@ -56,7 +56,7 @@ const menuPhoto = (name) => {
 // Pour la queue de bœuf, le visuel du menu doit remplacer toute ancienne photo enregistrée.
 const productPhoto = (p) => {
   const n = (p?.name || "").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
-  if(n.includes("queue de boeuf")) return menuPhoto(p.name);
+  if(n.includes("queue de boeuf") || n.includes("ntaba") || n.includes("dibi")) return menuPhoto(p.name);
   return p?.img_url || menuPhoto(p?.name);
 };
 
@@ -1365,7 +1365,7 @@ export default function AmlyPOS() {
                         <td style={{...S.td,color:p.stock<5?C.red:C.txt}}>{p.stock}</td>
                         <td style={S.td}>
                           <div style={{display:"flex",gap:4}}>
-                            <button onClick={()=>{setSelProduct(p);setNewP({name:p.name,cat:p.cat,price:String(p.price),cost:String(p.cost||0),stock:String(p.stock),img:p.img||"🍽️",img_url:p.img_url||""});setImgPreviewproductPhoto(p);setModal("editProd");}} style={{background:`${C.blue}15`,color:C.blue,border:`1px solid ${C.blue}40`,borderRadius:6,padding:"3px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>✏️</button>
+                            <button onClick={()=>{setSelProduct(p);setNewP({name:p.name,cat:p.cat,price:String(p.price),cost:String(p.cost||0),stock:String(p.stock),img:p.img||"🍽️",img_url:p.img_url||""});setImgPreview(productPhoto(p));setModal("editProd");}} style={{background:`${C.blue}15`,color:C.blue,border:`1px solid ${C.blue}40`,borderRadius:6,padding:"3px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>✏️</button>
                             <button onClick={()=>deleteProduct(p.id)} style={{background:`${C.red}18`,color:C.red,border:`1px solid ${C.red}40`,borderRadius:6,padding:"3px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>🗑️</button>
                           </div>
                         </td>
