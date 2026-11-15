@@ -32,8 +32,8 @@ const menuPhoto = (name) => {
   if(n.includes("alloco")) return "/menu/Alloco.jpg";
   if(n.includes("rice bowl")) return "/menu/Rice_bowl.jpg";
   if(n.includes("frites")) return "/menu/Frites.jpg";
-  // Le Poulet HIT utilise son nouveau visuel dédié.
-  if(n.includes("poulet hit")) return "/menu/POULET HIT .jpg";
+  // Le Poulet HIT reprend le visuel du poulet mayo.
+  if(n.includes("poulet hit")) return "/menu/Poulet_mayo.jpg";
   if(n.includes("poulet") && n.includes("mayo")) return "/menu/Poulet_mayo.jpg";
   if(n.includes("poulet") && n.includes("flambe")) return "/menu/Poulet_flambé.jpg";
   if(n.includes("poulet") && n.includes("braise")) return "/menu/Poulet_braise.jpg";
@@ -57,7 +57,7 @@ const menuPhoto = (name) => {
 // Pour la queue de bœuf, le visuel du menu doit remplacer toute ancienne photo enregistrée.
 const productPhoto = (p) => {
   const n = (p?.name || "").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
-  if(n.includes("queue de boeuf") || n.includes("ntaba") || n.includes("dibi") || n.includes("poulet") && n.includes("flambe")) return menuPhoto(p.name);
+  if(n.includes("queue de boeuf") || n.includes("ntaba") || n.includes("dibi") || n.includes("poulet") && (n.includes("hit") || n.includes("braise") || n.includes("flambe"))) return menuPhoto(p.name);
   return p?.img_url || menuPhoto(p?.name);
 };
 
