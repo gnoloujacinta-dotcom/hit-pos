@@ -1327,7 +1327,7 @@ export default function AmlyPOS() {
                         <td style={{...S.td,color:p.stock<5?C.red:C.txt}}>{p.stock}</td>
                         <td style={S.td}>
                           <div style={{display:"flex",gap:4}}>
-                            <button onClick={()=>{setSelProduct(p);setNewP({name:p.name,cat:p.cat,price:String(p.price),cost:String(p.cost||0),stock:String(p.stock),img:p.img||"🍽️",img_url:p.img_url||""});setImgPreview(p.img_url||"");setModal("editProd");}} style={{background:`${C.blue}15`,color:C.blue,border:`1px solid ${C.blue}40`,borderRadius:6,padding:"3px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>✏️</button>
+                            <button onClick={()=>{setSelProduct(p);setNewP({name:p.name,cat:p.cat,price:String(p.price),cost:String(p.cost||0),stock:String(p.stock),img:p.img||"🍽️",img_url:p.img_url||""});setImgPreview(p.img_url||menuPhoto(p.name));setModal("editProd");}} style={{background:`${C.blue}15`,color:C.blue,border:`1px solid ${C.blue}40`,borderRadius:6,padding:"3px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>✏️</button>
                             <button onClick={()=>deleteProduct(p.id)} style={{background:`${C.red}18`,color:C.red,border:`1px solid ${C.red}40`,borderRadius:6,padding:"3px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>🗑️</button>
                           </div>
                         </td>
@@ -1821,11 +1821,11 @@ export default function AmlyPOS() {
             <div style={{marginBottom:12}}>
               <div style={{fontSize:10,color:C.muted,marginBottom:5,fontWeight:600}}>PHOTO</div>
               <div style={{display:"flex",gap:10,alignItems:"center"}}>
-                {imgPreview?<img src={imgPreview} alt="preview" style={{width:70,height:70,objectFit:"cover",borderRadius:9,border:`2px solid ${C.accent}`,flexShrink:0}}/>
+                {(imgPreview||menuPhoto(selProduct.name))?<img src={imgPreview||menuPhoto(selProduct.name)} alt="preview" style={{width:70,height:70,objectFit:"cover",borderRadius:9,border:`2px solid ${C.accent}`,flexShrink:0}}/>
                   :<div style={{width:70,height:70,borderRadius:9,border:`2px dashed ${C.border}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,background:C.surface2,flexShrink:0,cursor:"pointer"}} onClick={()=>fileInputRef.current?.click()}>📷</div>}
                 <div style={{flex:1,display:"flex",flexDirection:"column",gap:5}}>
                   <button onClick={()=>fileInputRef.current?.click()} style={{...S.btnO,padding:"7px 10px",fontSize:11}}>📁 Changer image</button>
-                  <input ref={fileInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>handleImageFile(e.target.files[0])}/>
+                  <input ref={fileInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files?.[0];handleImageFile(file);e.target.value="";}}/>
                   <input style={{...S.input,fontSize:11}} placeholder="ou URL https://..." value={newP.img_url||""} onChange={e=>{setNewP(p=>({...p,img_url:e.target.value}));setImgPreview(e.target.value);}}/>
                 </div>
               </div>
@@ -1861,7 +1861,7 @@ export default function AmlyPOS() {
                   :<div style={{width:70,height:70,borderRadius:9,border:`2px dashed ${C.border}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,background:C.surface2,flexShrink:0,cursor:"pointer"}} onClick={()=>fileInputRef.current?.click()}>📷</div>}
                 <div style={{flex:1,display:"flex",flexDirection:"column",gap:5}}>
                   <button onClick={()=>fileInputRef.current?.click()} style={{...S.btnO,padding:"7px 10px",fontSize:11}}>📁 Choisir image</button>
-                  <input ref={fileInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>handleImageFile(e.target.files[0])}/>
+                  <input ref={fileInputRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files?.[0];handleImageFile(file);e.target.value="";}}/>
                   <input style={{...S.input,fontSize:11}} placeholder="ou URL https://..." value={newP.img_url||""} onChange={e=>{setNewP(p=>({...p,img_url:e.target.value}));setImgPreview(e.target.value);}}/>
                 </div>
               </div>
