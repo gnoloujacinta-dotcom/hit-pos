@@ -29,11 +29,10 @@ const menuPhoto = (name) => {
   if(n.includes("burger")) return "/menu/Burger.jpg";
   if(n.includes("queue de boeuf")) return "/menu/QUEUE DE BOEUF.jpg";
   if(n.includes("soupe") && n.includes("pondeuse")) return "/menu/SOUPE DE PONDEUSE.PNG";
-  if(n.includes("poulet hit")) return "/menu/POULET HIT .jpg";
   if(n.includes("alloco")) return "/menu/Alloco.jpg";
   if(n.includes("rice bowl")) return "/menu/Rice_bowl.jpg";
   if(n.includes("frites")) return "/menu/Frites.jpg";
-  // Les deux plats ont des photos distinctes.
+  // Le Poulet HIT utilise son nouveau visuel dédié.
   if(n.includes("poulet hit")) return "/menu/POULET HIT .jpg";
   if(n.includes("poulet") && n.includes("mayo")) return "/menu/Poulet_mayo.jpg";
   if(n.includes("poulet") && (n.includes("braise") || n.includes("flambe"))) return "/menu/Poulet_braise.jpg";
@@ -64,8 +63,8 @@ const MENU_PRODUCTS = [
   {name:"Queue de bœuf braisée + attiéké",cat:"Plats",price:5000,img:"🍖"},
   {name:"Poulet braisé entier + attiéké",cat:"Plats",price:10000,img:"🍗"},
   {name:"Demi-poulet braisé + attiéké",cat:"Plats",price:6000,img:"🍗"},
-  {name:"Poulet mayo entier + attiéké",cat:"Plats",price:10000,img:"🍗"},
-  {name:"Demi-poulet mayo + attiéké",cat:"Plats",price:6000,img:"🍗"},
+  {name:"Poulet HIT entier + attiéké",cat:"Plats",price:10000,img:"🍗"},
+  {name:"Demi-poulet HIT + attiéké",cat:"Plats",price:6000,img:"🍗"},
   {name:"Ntaba / Dibi + attiéké",cat:"Plats",price:5000,img:"🥩"},
   {name:"Poulet flambé + attiéké",cat:"Plats",price:10000,img:"🍗"},
   {name:"Brochettes poulet (plat)",cat:"Plats",price:4000,img:"🍢"},
@@ -448,7 +447,10 @@ export default function AmlyPOS() {
       // Corriger les anciens intitulés sans toucher aux prix, coûts ni stocks déjà saisis.
       const renameMap = {
         "queue de bœuf + attiéké":"Queue de bœuf braisée + attiéké",
-        "moelleux chocolat":"Moelleux au chocolat"
+        "moelleux chocolat":"Moelleux au chocolat",
+        "poulet mayo entier + attiéké":"Poulet HIT entier + attiéké",
+        "demi-poulet mayo + attiéké":"Demi-poulet HIT + attiéké",
+        "poulet mayo":"Poulet HIT"
       };
       for(const p of (Array.isArray(prods)?prods:[])) {
         const correctedName = renameMap[(p.name||"").trim().toLowerCase()];
