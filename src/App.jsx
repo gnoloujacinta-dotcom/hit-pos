@@ -107,13 +107,10 @@ const MENU_PRODUCTS = [
 
 const DEFAULT_PRODUCTS = [
   {name:"Poulet braisé",cat:"Plats",price:5000,cost:2000,stock:15,img:"🍗"},
-  {name:"Attiéké Poisson",cat:"Plats",price:4000,cost:1500,stock:10,img:"🐟"},
   {name:"Hamburger",cat:"Plats",price:3500,cost:1200,stock:8,img:"🍔"},
   {name:"Spaghetti Bolognaise",cat:"Plats",price:4500,cost:1800,stock:13,img:"🍝"},
-  {name:"Brochette de bœuf",cat:"Plats",price:6000,cost:2500,stock:6,img:"🍖"},
   {name:"Jus naturel",cat:"Boissons",price:2000,cost:800,stock:20,img:"🍹"},
   {name:"Soda",cat:"Boissons",price:1500,cost:600,stock:30,img:"🥤"},
-  {name:"Gâteau Chocolat",cat:"Desserts",price:2500,cost:900,stock:7,img:"🍰"},
 ];
 
 const DEFAULT_EMPLOYEES = [
@@ -431,6 +428,18 @@ export default function AmlyPOS() {
         for(const p of DEFAULT_PRODUCTS) await sb.insert("products", p);
         prods = await sb.get("products");
       }
+      // Retirer définitivement les anciens articles demandés, sans toucher aux ventes passées.
+      const normalizeProductName = (value) => (value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
+      const removedProduct = (name) => {
+        const n = normalizeProductName(name);
+        return n.includes("brochette de boeuf") ||
+          n === "attieke poisson" || n.includes("poisson avec attieke") ||
+          n === "gateau chocolat" || n === "gateaux au chocolat" || n === "gateau au chocolat";
+      };
+      for(const p of (Array.isArray(prods)?prods:[])) {
+        if(removedProduct(p.name) && p.id) await sb.del("products",p.id);
+      }
+      prods = (Array.isArray(prods)?prods:[]).filter(p=>!removedProduct(p.name));
       // Corriger les anciens intitulés sans toucher aux prix, coûts ni stocks déjà saisis.
       const renameMap = {
         "queue de bœuf + attiéké":"Queue de bœuf braisée + attiéké",
