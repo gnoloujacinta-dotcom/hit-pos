@@ -24,8 +24,6 @@ const menuPhoto = (name) => {
   const n = (name || "").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
   if(n.includes("tacos")) return "/menu/French_tacos.jpg";
   if(n.includes("burger")) return "/menu/Burger.jpg";
-  if(n.includes("poulet mayo")) return "/menu/Poulet_mayo.jpg";
-  if(n.includes("poulet braise") || n.includes("poulet flambe")) return "/menu/Poulet_braise.jpg";
   if(n.includes("pizza")) return "/menu/Pizza.jpg";
   if(n.includes("tagliatelle alfredo")) return "/menu/Tagliatelle_Alfredo.jpg";
   if(n.includes("tagliatelle bolognaise")) return "/menu/Tagliatelle_bolognaise.jpg";
