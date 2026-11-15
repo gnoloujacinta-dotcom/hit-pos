@@ -73,7 +73,7 @@ const MENU_PRODUCTS = [
   {name:"Demi-poulet braisé + attiéké",cat:"Plats",price:6000,img:"🍗"},
   {name:"Poulet HIT entier + attiéké",cat:"Plats",price:10000,img:"🍗"},
   {name:"Demi-poulet HIT + attiéké",cat:"Plats",price:6000,img:"🍗"},
-  {name:"Ntaba / Dibi + attiéké",cat:"Plats",price:5000,img:"🥩"},
+  {name:"Dibi + attiéké",cat:"Plats",price:5000,img:"🥩"},
   {name:"Poulet flambé + attiéké",cat:"Plats",price:10000,img:"🍗"},
   {name:"Brochettes poulet (plat)",cat:"Plats",price:4000,img:"🍢"},
   {name:"Brochettes agneau (plat)",cat:"Plats",price:5000,img:"🍢"},
@@ -458,7 +458,8 @@ export default function AmlyPOS() {
         "moelleux chocolat":"Moelleux au chocolat",
         "poulet mayo entier + attiéké":"Poulet HIT entier + attiéké",
         "demi-poulet mayo + attiéké":"Demi-poulet HIT + attiéké",
-        "poulet mayo":"Poulet HIT"
+        "poulet mayo":"Poulet HIT",
+        "ntaba / dibi + attiéké":"Dibi + attiéké"
       };
       for(const p of (Array.isArray(prods)?prods:[])) {
         const correctedName = renameMap[(p.name||"").trim().toLowerCase()];
