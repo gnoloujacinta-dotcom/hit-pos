@@ -21,17 +21,28 @@ const METHODS  = ["Espèces","Wave","Orange Money","Carte","Glovo"];
 const PAY_COLORS = ["#4f46e5","#3b82f6","#f97316","#8b5cf6","#ec4899"];
 
 const menuPhoto = (name) => {
-  // Normaliser correctement les accents pour que les noms français correspondent.
+  // Normaliser les accents et reconnaître les nouveaux visuels du menu.
   const n = (name || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
   if(n.includes("tacos")) return "/menu/French_tacos.jpg";
+  if(n.includes("chicken burger")) return "/menu/Chicken_Burger.jpg";
+  if(n.includes("double cheese") || n.includes("double cheeseburger")) return "/menu/Double_Cheese_Burger.jpg";
   if(n.includes("burger")) return "/menu/Burger.jpg";
+  if(n.includes("queue de boeuf")) return "/menu/Queue_boeuf.jpg";
+  if(n.includes("alloco")) return "/menu/Alloco.jpg";
+  if(n.includes("rice bowl")) return "/menu/Rice_bowl.jpg";
+  if(n.includes("frites")) return "/menu/Frites.jpg";
+  if(n.includes("attieke")) return "/menu/Attieke.jpg";
+  if(n.includes("dibi") || n.includes("ntaba")) return "/menu/Dibi.jpg";
+  if(n.includes("coca-cola") || n.includes("coca cola")) return "/menu/Coca-Cola.jpg";
+  if(n.includes("fanta")) return "/menu/Fanta.jpg";
+  if(n.includes("moelleux au chocolat")) return "/menu/Moelleux_chocolat.jpg";
   if(n.includes("poulet") && n.includes("mayo")) return "/menu/Poulet_mayo.jpg";
   if(n.includes("poulet") && (n.includes("braise") || n.includes("flambe"))) return "/menu/Poulet_braise.jpg";
   if(n.includes("pizza")) return "/menu/Pizza.jpg";
   if(n.includes("tagliatelle alfredo")) return "/menu/Tagliatelle_Alfredo.jpg";
   if(n.includes("tagliatelle bolognaise")) return "/menu/Tagliatelle_bolognaise.jpg";
   if(n.includes("salade cesar")) return "/menu/Salade_Cesar.jpg";
-  if(n.includes("crepe chocolat")) return "/menu/Crepe_chocolat.jpg";
+  if(n.includes("crepe chocolat") || n.includes("crepe nutella")) return "/menu/Crepe_chocolat.jpg";
   if(n.includes("tiramisu")) return "/menu/Tiramisu.jpg";
   if(n.includes("milkshake chocolat")) return "/menu/Milkshake_chocolat.jpg";
   if(n.includes("milkshake fraise")) return "/menu/Milkshake_fraise.jpg";
