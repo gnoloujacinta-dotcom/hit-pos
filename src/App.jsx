@@ -27,7 +27,7 @@ const menuPhoto = (name) => {
   if(n.includes("chicken burger")) return "/menu/Chicken_Burger.jpg";
   if(n.includes("double cheese") || n.includes("double cheeseburger")) return "/menu/Double_Cheese_Burger.jpg";
   if(n.includes("burger")) return "/menu/Burger.jpg";
-  if(n.includes("queue de boeuf")) return "/menu/QUEUE DE BOEUF.jpg";
+  if(n.includes("queue de boeuf")) return "/menu/Queue_boeuf.jpg";
   if(n.includes("soupe") && n.includes("pondeuse")) return "/menu/SOUPE DE PONDEUSE.PNG";
   if(n.includes("alloco")) return "/menu/Alloco.jpg";
   if(n.includes("rice bowl")) return "/menu/Rice_bowl.jpg";
@@ -51,6 +51,13 @@ const menuPhoto = (name) => {
   if(n.includes("milkshake fraise")) return "/menu/Milkshake_fraise.jpg";
   if(n.includes("milkshake vanille")) return "/menu/Milkshake_vanille.jpg";
   return "";
+};
+
+// Pour la queue de bœuf, le visuel du menu doit remplacer toute ancienne photo enregistrée.
+const productPhoto = (p) => {
+  const n = (p?.name || "").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
+  if(n.includes("queue de boeuf")) return menuPhoto(p.name);
+  return p?.img_url || menuPhoto(p?.name);
 };
 
 const MENU_PRODUCTS = [
@@ -1034,7 +1041,7 @@ export default function AmlyPOS() {
                       style={{background:C.cardBg,border:`1px solid ${C.cardBorder}`,borderRadius:12,padding:10,cursor:p.stock>0?"pointer":"not-allowed",textAlign:"center",opacity:p.stock===0?0.45:1,display:"flex",flexDirection:"column",gap:4,boxShadow:C.shadow,transition:"all .15s"}}
                       onMouseEnter={e=>{if(p.stock>0){e.currentTarget.style.borderColor=C.accent;e.currentTarget.style.transform="translateY(-2px)";}}}
                       onMouseLeave={e=>{e.currentTarget.style.borderColor=C.cardBorder;e.currentTarget.style.transform="none";}}>
-                      {(p.img_url||menuPhoto(p.name))?<img src={p.img_url||menuPhoto(p.name)} alt={p.name} style={{width:"100%",height:72,objectFit:"cover",borderRadius:8}}/>
+                      {productPhoto(p)?<img src={productPhoto(p)} alt={p.name} style={{width:"100%",height:72,objectFit:"cover",borderRadius:8}}/>
                         :<div style={{fontSize:32,height:72,display:"flex",alignItems:"center",justifyContent:"center",background:C.surface2,borderRadius:8}}>{p.img}</div>}
                       <div style={{fontSize:11,fontWeight:600,lineHeight:1.3,color:C.txt}}>{p.name}</div>
                       <div style={{fontSize:12,fontWeight:800,color:C.accent}}>{fmt(p.price)} F</div>
@@ -1348,7 +1355,7 @@ export default function AmlyPOS() {
                   <tbody>
                     {products.map(p=>{const mg=p.price-p.cost,pct=p.price>0?((mg/p.price)*100).toFixed(1):0;return(
                       <tr key={p.id}>
-                        <td style={S.td}>{(p.img_url||menuPhoto(p.name))?<img src={p.img_url||menuPhoto(p.name)} alt={p.name} style={{width:30,height:30,objectFit:"cover",borderRadius:5}}/>:<span style={{fontSize:18}}>{p.img}</span>}</td>
+                        <td style={S.td}>{productPhoto(p)?<img src={productPhoto(p)} alt={p.name} style={{width:30,height:30,objectFit:"cover",borderRadius:5}}/>:<span style={{fontSize:18}}>{p.img}</span>}</td>
                         <td style={{...S.td,fontWeight:600,color:C.txt}}>{p.name}</td>
                         <td style={S.td}><span style={{display:"inline-block",padding:"2px 7px",borderRadius:8,fontSize:10,fontWeight:600,background:C.accentBg,color:C.accent}}>{p.cat}</span></td>
                         <td style={{...S.td,color:C.muted}}>{fmt(p.cost)} F</td>
@@ -1358,7 +1365,7 @@ export default function AmlyPOS() {
                         <td style={{...S.td,color:p.stock<5?C.red:C.txt}}>{p.stock}</td>
                         <td style={S.td}>
                           <div style={{display:"flex",gap:4}}>
-                            <button onClick={()=>{setSelProduct(p);setNewP({name:p.name,cat:p.cat,price:String(p.price),cost:String(p.cost||0),stock:String(p.stock),img:p.img||"🍽️",img_url:p.img_url||""});setImgPreview(p.img_url||menuPhoto(p.name));setModal("editProd");}} style={{background:`${C.blue}15`,color:C.blue,border:`1px solid ${C.blue}40`,borderRadius:6,padding:"3px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>✏️</button>
+                            <button onClick={()=>{setSelProduct(p);setNewP({name:p.name,cat:p.cat,price:String(p.price),cost:String(p.cost||0),stock:String(p.stock),img:p.img||"🍽️",img_url:p.img_url||""});setImgPreviewproductPhoto(p);setModal("editProd");}} style={{background:`${C.blue}15`,color:C.blue,border:`1px solid ${C.blue}40`,borderRadius:6,padding:"3px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>✏️</button>
                             <button onClick={()=>deleteProduct(p.id)} style={{background:`${C.red}18`,color:C.red,border:`1px solid ${C.red}40`,borderRadius:6,padding:"3px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>🗑️</button>
                           </div>
                         </td>
@@ -1410,7 +1417,7 @@ export default function AmlyPOS() {
                   <tbody>
                     {products.map(p=>(
                       <tr key={p.id}>
-                        <td style={S.td}>{(p.img_url||menuPhoto(p.name))?<img src={p.img_url||menuPhoto(p.name)} alt={p.name} style={{width:26,height:26,objectFit:"cover",borderRadius:4}}/>:<span style={{fontSize:16}}>{p.img}</span>}</td>
+                        <td style={S.td}>{productPhoto(p)?<img src={productPhoto(p)} alt={p.name} style={{width:26,height:26,objectFit:"cover",borderRadius:4}}/>:<span style={{fontSize:16}}>{p.img}</span>}</td>
                         <td style={{...S.td,fontWeight:600,color:C.txt}}>{p.name}</td>
                         <td style={{...S.td,color:C.muted}}>{p.cat}</td>
                         <td style={{...S.td,fontWeight:700,color:p.stock<5?C.red:C.txt}}>{p.stock}</td>
