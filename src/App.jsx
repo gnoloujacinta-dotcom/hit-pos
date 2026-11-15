@@ -27,7 +27,7 @@ const menuPhoto = (name) => {
   if(n.includes("chicken burger")) return "/menu/Chicken_Burger.jpg";
   if(n.includes("double cheese") || n.includes("double cheeseburger")) return "/menu/Double_Cheese_Burger.jpg";
   if(n.includes("burger")) return "/menu/Burger.jpg";
-  if(n.includes("queue de boeuf") || n.includes("queue de bœuf")) return "/menu/Queue_boeuf.jpg";
+  if(n.includes("queue de boeuf") || n.includes("queue de bœuf")) return "/menu/Queue_boeuf.jpg?v=20261115";
   if(n.includes("soupe") && n.includes("pondeuse")) return "/menu/SOUPE DE PONDEUSE.PNG";
   if(n.includes("alloco")) return "/menu/Alloco.jpg";
   if(n.includes("rice bowl")) return "/menu/Rice_bowl.jpg";
@@ -38,7 +38,7 @@ const menuPhoto = (name) => {
   if(n.includes("poulet") && n.includes("flambe")) return "/menu/Poulet_flambé.jpg";
   if(n.includes("poulet") && n.includes("braise")) return "/menu/Poulet_braise.jpg";
   if(n.includes("attieke")) return "/menu/Attieke.jpg";
-  if(n.includes("dibi") || n.includes("ntaba")) return "/menu/Dibi.jpg";
+  if(n.includes("dibi") || n.includes("ntaba")) return "/menu/Dibi.jpg?v=20261115";
   if(n.includes("coca-cola") || n.includes("coca cola")) return "/menu/Coca-Cola.jpg";
   if(n.includes("fanta")) return "/menu/Fanta.jpg";
   if(n.includes("moelleux au chocolat")) return "/menu/Moelleux_chocolat.jpg";
