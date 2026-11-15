@@ -68,7 +68,7 @@ const MENU_PRODUCTS = [
   {name:"Chicken burger + frites",cat:"Plats",price:5000,img:"🍔"},
   {name:"Double cheeseburger + frites",cat:"Plats",price:5000,img:"🍔"},
   // Grillades et spécialités
-  {name:"Queue de bœuf braisée + attiéké",cat:"Plats",price:5000,img:"🍖"},
+  {name:"Queue de bœuf",cat:"Plats",price:5000,img:"🍖"},
   {name:"Poulet braisé entier + attiéké",cat:"Plats",price:10000,img:"🍗"},
   {name:"Demi-poulet braisé + attiéké",cat:"Plats",price:6000,img:"🍗"},
   {name:"Poulet HIT entier + attiéké",cat:"Plats",price:10000,img:"🍗"},
@@ -454,7 +454,10 @@ export default function AmlyPOS() {
       prods = (Array.isArray(prods)?prods:[]).filter(p=>!removedProduct(p.name));
       // Corriger les anciens intitulés sans toucher aux prix, coûts ni stocks déjà saisis.
       const renameMap = {
-        "queue de bœuf + attiéké":"Queue de bœuf braisée + attiéké",
+        "queue de bœuf + attiéké":"Queue de bœuf",
+        "queue de bœuf braisée + attiéké":"Queue de bœuf",
+        "queue de boeuf + attieke":"Queue de bœuf",
+        "queue de boeuf braisee + attieke":"Queue de bœuf",
         "moelleux chocolat":"Moelleux au chocolat",
         "poulet mayo entier + attiéké":"Poulet HIT entier + attiéké",
         "demi-poulet mayo + attiéké":"Demi-poulet HIT + attiéké",
