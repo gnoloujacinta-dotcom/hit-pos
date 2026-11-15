@@ -395,8 +395,19 @@ export default function AmlyPOS() {
 
   const addToCart = p => {
     if(p.stock<=0){showToast("Stock épuisé",true);return;}
-    setCart(prev=>{const ex=prev.find(i=>i.id===p.id);return ex?prev.map(i=>i.id===p.id?{...i,qty:i.qty+1}:i):[...prev,{...p,qty:1}];});
+    const isBraise = p.name?.toLowerCase().includes("poulet braisé");
+    setCart(prev=>{
+      const ex=prev.find(i=>i.id===p.id);
+      return ex
+        ? prev.map(i=>i.id===p.id?{...i,qty:i.qty+1}:i)
+        : [...prev,{...p,qty:1,...(isBraise?{spice:"Moyen"}:{})}];
+    });
   };
+  const updateCartSpice = (id, spice) => {
+    setCart(prev=>prev.map(i=>i.id===id?{...i,spice}:i));
+  };
+  const kitchenProductName = item =>
+    item.spice ? `${item.name} — ${item.spice.toLowerCase()} piquant` : item.name;
   const updateQty  = (id,d) => setCart(prev=>prev.map(i=>i.id===id?{...i,qty:Math.max(1,i.qty+d)}:i));
   const removeItem = id     => setCart(prev=>prev.filter(i=>i.id!==id));
 
@@ -452,7 +463,7 @@ export default function AmlyPOS() {
     try {
       const ref=`#CMD-${Date.now()}`;
       const [order]=await sb.insert("orders",{reference:ref,table_id:selTable?.id||null,type:orderType,statut:"en_attente",vendor:currentUser?.name||"Employé",note:""});
-      if(order){ for(const i of cart) await sb.insert("order_items",{order_id:order.id,product_name:i.name,qty:i.qty,statut:"en_attente"}); }
+      if(order){ for(const i of cart) await sb.insert("order_items",{order_id:order.id,product_name:kitchenProductName(i),qty:i.qty,statut:"en_attente"}); }
       showToast("Commande envoyée en cuisine ✓");
       setModal("confirm_pay");
     } catch{ showToast("Erreur envoi cuisine",true); }
@@ -475,7 +486,7 @@ export default function AmlyPOS() {
         client_id:selClient?.id||null
       });
       if(sale){
-        for(const i of cart) await sb.insert("sale_items",{sale_id:sale.id,name:i.name,qty:i.qty,price:i.price,cost:i.cost});
+        for(const i of cart) await sb.insert("sale_items",{sale_id:sale.id,name:kitchenProductName(i),qty:i.qty,price:i.price,cost:i.cost});
         for(const i of cart){const p=products.find(x=>x.id===i.id);if(p) await sb.update("products",p.id,{stock:Math.max(0,p.stock-i.qty)});}
         await deduireIngredients(cart);
         if(selTable) await sb.update("tables_restaurant",selTable.id,{statut:"libre"});
@@ -484,7 +495,7 @@ export default function AmlyPOS() {
       }
       await loadAll();
       setSelSale(sale);
-      setSaleItems(prev=>({...prev,[sale?.id]:cart.map(i=>({name:i.name,qty:i.qty,price:i.price,cost:i.cost}))}));
+      setSaleItems(prev=>({...prev,[sale?.id]:cart.map(i=>({name:kitchenProductName(i),qty:i.qty,price:i.price,cost:i.cost}))}));
       setCart([]); setDiscount(0); setAmount1(""); setAmount2(""); setSelTable(null); setSelClient(null);
       setModal("receipt"); showToast("Vente enregistrée ✓");
     } catch{ showToast("Erreur vente",true); }
@@ -905,7 +916,17 @@ export default function AmlyPOS() {
                       <tbody>
                         {cart.map(i=>(
                           <tr key={i.id}>
-                            <td style={{...S.td,fontSize:10,paddingLeft:8}}>{i.img} {i.name}</td>
+                            <td style={{...S.td,fontSize:10,paddingLeft:8}}>
+                              {i.img} {i.name}
+                              {i.name?.toLowerCase().includes("poulet braisé")&&(
+                                <select aria-label="Niveau de piment" value={i.spice||"Moyen"} onChange={e=>updateCartSpice(i.id,e.target.value)}
+                                  style={{display:"block",marginTop:5,maxWidth:130,background:C.inputBg,border:`1px solid ${C.inputBorder}`,borderRadius:5,padding:"4px 5px",color:C.txt,fontSize:10}}>
+                                  <option value="Non piquant">Non piquant</option>
+                                  <option value="Moyen">Moyen</option>
+                                  <option value="Très piquant">Très piquant</option>
+                                </select>
+                              )}
+                            </td>
                             <td style={{...S.td,textAlign:"center"}}>
                               <div style={{display:"flex",alignItems:"center",gap:2,justifyContent:"center"}}>
                                 <button onClick={()=>updateQty(i.id,-1)} style={{width:18,height:18,borderRadius:4,border:`1px solid ${C.border}`,background:C.surface2,color:C.txt,cursor:"pointer",fontSize:11}}>−</button>
