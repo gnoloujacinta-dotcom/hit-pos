@@ -441,8 +441,34 @@ export default function AmlyPOS() {
 
   const handleImageFile = (file) => {
     if(!file) return;
+    if(!file.type?.startsWith("image/")) { showToast("Choisis un fichier image",true); return; }
     const reader=new FileReader();
-    reader.onload=(e)=>{ const b64=e.target.result; setImgPreview(b64); setNewP(p=>({...p,img_url:b64})); };
+    reader.onload=(e)=>{
+      const source=e.target.result;
+      const image=new Image();
+      image.onload=()=>{
+        const maxSide=900;
+        const scale=Math.min(1,maxSide/Math.max(image.width,image.height));
+        const canvas=document.createElement("canvas");
+        canvas.width=Math.max(1,Math.round(image.width*scale));
+        canvas.height=Math.max(1,Math.round(image.height*scale));
+        const ctx=canvas.getContext("2d");
+        ctx.drawImage(image,0,0,canvas.width,canvas.height);
+        let quality=0.78;
+        let compressed=canvas.toDataURL("image/jpeg",quality);
+        while(compressed.length>180000 && quality>0.35){
+          quality-=0.08;
+          compressed=canvas.toDataURL("image/jpeg",quality);
+        }
+        if(compressed.length>200000){ showToast("Image trop volumineuse même après compression",true); return; }
+        setImgPreview(compressed);
+        setNewP(p=>({...p,img_url:compressed}));
+        showToast("Photo prête ✓");
+      };
+      image.onerror=()=>showToast("Impossible de lire cette image",true);
+      image.src=source;
+    };
+    reader.onerror=()=>showToast("Erreur de lecture de la photo",true);
     reader.readAsDataURL(file);
   };
 
@@ -609,7 +635,7 @@ export default function AmlyPOS() {
       // Limiter la taille de img_url si c'est du base64 (max 200KB)
       let img_url = newP.img_url || "";
       if(img_url.startsWith("data:") && img_url.length > 200000) {
-        showToast("Photo trop lourde, réduis l'image",true);
+        showToast("La photo dépasse la limite après compression",true);
         setLoading(false); return;
       }
       const payload = {
